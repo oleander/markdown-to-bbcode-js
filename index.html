@@ -1,0 +1,24 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Jasmine Test Runner</title>
+  <script type="text/javascript" charset="utf-8" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+  <script type="text/javascript" charset="utf-8" src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+  <script type="text/javascript" src="application.js"></script>
+</head>
+<body>
+  <script type="text/template" id="list-template">
+    [LIST]
+    <% for (var i = list.length - 1; i >= 0; i--){ %>
+      [*]<%= list[i] %>
+    <% }; %>
+    [/LIST]
+  </script>
+  <div id="from">
+    - A BBB
+    - B
+  </div>
+  <div id="to"></div>
+</body>
+</html>
