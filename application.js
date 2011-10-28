@@ -11,12 +11,12 @@ App.methods.orderedList = function(lines) {
   var template = _.template("[LIST=1]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>[/LIST]");
   for (var i = 0; i < lines.length; i++) {
     /* Is this a list item ?*/
-    if (lines[i].match(/^\s*\d+\. ([^\n]+)\n/)) {
-      var matches = [lines[i].replace(/^\s*\d+\. ([^\n]+)\n/, "$1")];
+    if (lines[i].match(/^\d+\. ([^\n]+)\n/)) {
+      var matches = [lines[i].replace(/^\d+\. ([^\n]+)\n/, "$1")];
       lines[i] = null;
       for (i = (i + 1); i < lines.length; i++) {
-        if (lines[i].match(/^\s*\d+\. ([^\n]+)\n/)) {
-          matches.push(lines[i].replace(/^\s*\d+\. /, ""));
+        if (lines[i].match(/^\d+\. ([^\n]+)\n/)) {
+          matches.push(lines[i].replace(/^\d+\. /, ""));
           lines[i] = null;
         } else {
           break;
@@ -152,12 +152,16 @@ App.methods.italic = function(content) {
 };
 
 /*
-  Converts Markdown _Text_ into into BBCode's [U] tag.
+  Converts Markdown _Text_ and __Text__ into into BBCode's [U] tag.
   @content String The raw document. Each line is in Markdown.
   @return String The raw document. Each line is in BBCode.
 */
 App.methods.underscore = function(content) {
-  return content.replace(/_([^\_]+)_/, '[U]$1[/U]');
+  _.each(["__([^__]+)__", "[^_]_([^\_]+)_[^_]"], function(regexp) {
+    content = content.replace(new RegExp(regexp, "gmi"), '\n[U]$1[/U]');
+  });
+  
+  return content; 
 };
 
 $(function() {
