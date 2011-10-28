@@ -69,7 +69,7 @@ App.methods.unorderedList = function(lines) {
       });
     }
   };
-
+  
   /* We've to remove all empty lines. */
   return _.reject(lines, function(line) {
     return !line;
@@ -101,7 +101,7 @@ App.methods.url = function(content) {
 App.methods.code = function(content) {
   var regexp = /```\s*(([^\n]+))?([^```]+)```/img;
   var template = _.template("[<%= type %>]<%= content%>[/<%= type %>]");
-  
+
   var getType = function(match) {
     var type = match.trim().toUpperCase();
     if (_.include(["CODE", "HTML", "PHP"], type)) {
@@ -110,28 +110,27 @@ App.methods.code = function(content) {
       return "CODE";
     }
   };
-  
+
   content = content.replace(regexp, function(full, none, type, code) {
     var type = getType(type);
-    if(code.trim().length === 0){
+    if (code.trim().length === 0) {
       code = type;
     } else {
       code = code.trim();
     }
-    
+
     return template({
       type: type,
       content: code
     });
   });
-  
-  content.replace(/\n\s{5}([^\n]+)/img, function(content, ok, sec) {
-    
-    console.debug(ok);
-    return content;
+
+  return content.replace(/\n[ ]{4}([^\n]+)\n/g, function(content, code) {
+    return "\n" + template({
+      type: "CODE",
+      content: code
+    });
   });
-  
-  return content;
 };
 
 /*
@@ -167,7 +166,7 @@ $(function() {
   var to = $("#to");
 
   var content = container.html()
-  
+
   from.val(content);
   var original = content;
 
@@ -177,7 +176,7 @@ $(function() {
   });
 
   /* Line specific methods */
-  var lines = content.match(/\n?.*\n/g);
+  var lines = content.split(/\n/);
   _.each(["unorderedList", "orderedList"], function(method) {
     lines = App.methods[method](lines);
   });
