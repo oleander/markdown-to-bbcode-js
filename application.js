@@ -112,7 +112,14 @@ App.methods.code = function(content) {
       return "CODE";
     }
   };
-
+  
+  /*
+    ``` code
+    My code block
+    ```
+    =>
+    [CODE]My Code block[/CODE]
+  */
   content = content.replace(regexp, function(full, none, type, code) {
     var type = getType(type);
     if (code.trim().length === 0) {
@@ -126,7 +133,8 @@ App.methods.code = function(content) {
       content: code
     });
   });
-
+  
+  /* [    ]My code block => [CODE]My code block[/CODE] */
   content = content.replace(/\n[ ]{4}([^\n]+)\n/g, function(content, code) {
     return template({
       type: "CODE",
@@ -134,7 +142,8 @@ App.methods.code = function(content) {
     });
   });
   
-  return content.replace(/`([^`]+)`/, function(content, code) {
+  /* `My code block` => [CODE]My code block[/CODE] */
+  return content.replace(/`([^`]+)`/g, function(content, code) {
     return template({
       type: "CODE",
       content: code
