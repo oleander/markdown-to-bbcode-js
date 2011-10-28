@@ -64,12 +64,21 @@ App.methods.italic = function(content) {
   return content.replace(/\*([^\*]+)\*/, '[I]$1[/I]');
 };
 
+/*
+  Converts Markdown _Text_ into into BBCode's [U] tag.
+  @content String The raw document. Each line is in Markdown.
+  @return String The raw document. Each line is in BBCode.
+*/
+App.methods.underscore = function(content) {
+  return content.replace(/_([^\_]+)_/, '[U]$1[/U]');
+};
+
 $(function() {
   var from = $("#from");
   var content = from.html();
   
   /* String specific methods */
-  _.each(["url", "strong", "italic"], function(method) {
+  _.each(["url", "strong", "italic", "underscore"], function(method) {
     content = App.methods[method](content);
   });
   
