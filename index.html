@@ -29,55 +29,43 @@
   </style>
 </head>
 <body>
-  <script type="text/template" id="unorderedList-template">
-    [LIST]
-    <% for (var i = list.length - 1; i >= 0; i--){ %>
-      [*]<%= list[i] %>
-    <% }; %>
-    [/LIST]
-  </script>
-  
-  <script type="text/template" id="orderedList-template">
-    [LIST=1]
-    <% for (var i = list.length - 1; i >= 0; i--){ %>
-      [*]<%= list[i] %>
-    <% }; %>
-    [/LIST]
-  </script>  
-  
-  <div id="from">
-    **Text!**
-    - ABC
-    - DEF
-    - GHI
-    
-    *Random*
-    _OK_
-    [This is a url](http://google.com)
-    
-    - JKL
-    - MNO
-    
-    ```
-    General code
-    ```
-    
-    ``` html
-    HTML code
-    ```
-    
-    ``` php
-    PHP code
-    ```
-    
-    1. Item 1
-    2. Item 2
-    
-    This is a line break
-    
-    - PQR
-    - STU
+  <div id="container" style="display:none;">
+**Text!**
+- ABC
+- DEF
+- GHI
+
+*Random*
+_OK_
+[This is a url](http://google.com)
+
+- JKL
+- MNO
+
+```
+General code
+```
+
+``` html
+HTML code
+```
+
+``` php
+PHP code
+```
+    Antoher one!
+
+1. Item 1
+2. Item 2
+
+This is a line break
+
+- PQR
+- STU
+
+    This is code!
   </div>
-  <div id="to"></div>
+  <textarea id="from"></textarea>
+  <textarea id="to"></textarea>
 </body>
 </html>

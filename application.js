@@ -8,14 +8,14 @@ App.methods = {};
   @return Array<String> A list of lines. Each line is in BBCode.
 */
 App.methods.orderedList = function(lines) {
-  var template = _.template($("#orderedList-template").html());
+  var template = _.template("[LIST=1]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>[/LIST]");
   for (var i = 0; i < lines.length; i++) {
     /* Is this a list item ?*/
-    if (lines[i].match(/^\s*\d+\. ([^\n]+)/)) {
-      var matches = [lines[i].replace(/^\s*\d+\. /, "")];
+    if (lines[i].match(/^\s*\d+\. ([^\n]+)\n/)) {
+      var matches = [lines[i].replace(/^\s*\d+\. ([^\n]+)\n/, "$1")];
       lines[i] = null;
       for (i = (i + 1); i < lines.length; i++) {
-        if (lines[i].match(/^\s*\d+\. ([^\n]+)/)) {
+        if (lines[i].match(/^\s*\d+\. ([^\n]+)\n/)) {
           matches.push(lines[i].replace(/^\s*\d+\. /, ""));
           lines[i] = null;
         } else {
@@ -45,14 +45,14 @@ App.methods.orderedList = function(lines) {
   @return Array<String> A list of lines. Each line is in BBCode.
 */
 App.methods.unorderedList = function(lines) {
-  var template = _.template($("#unorderedList-template").html());
+  var template = _.template("[LIST]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i].replace(/\n/, '') %><% }; %>\n[/LIST]");
   for (var i = 0; i < lines.length; i++) {
     /* Is this a list item ?*/
-    if (lines[i].match(/^\s*- ([^\n]+)/)) {
+    if (lines[i].match(/^\s*- ([^\n]+)\n/)) {
       var matches = [lines[i].replace(/^\s*- /, "")];
       lines[i] = null;
       for (i = (i + 1); i < lines.length; i++) {
-        if (lines[i].match(/^\s*- ([^\n]+)/)) {
+        if (lines[i].match(/^\s*- ([^\n]+)\n/)) {
           matches.push(lines[i].replace(/^\s*- /, ""));
           lines[i] = null;
         } else {
@@ -100,6 +100,7 @@ App.methods.url = function(content) {
 */
 App.methods.code = function(content) {
   var regexp = /```\s*(([^\n]+))?([^```]+)```/img;
+  var template = _.template("[<%= type %>]<%= content%>[/<%= type %>]");
   
   var getType = function(match) {
     var type = match.trim().toUpperCase();
@@ -110,15 +111,27 @@ App.methods.code = function(content) {
     }
   };
   
-  return content.replace(regexp, function(full, none, type, code) {
+  content = content.replace(regexp, function(full, none, type, code) {
     var type = getType(type);
     if(code.trim().length === 0){
       code = type;
     } else {
       code = code.trim();
     }
-    return "[" + type + "]\n" + code + "\n[/" + type + "]";
+    
+    return template({
+      type: type,
+      content: code
+    });
   });
+  
+  content.replace(/\n\s{5}([^\n]+)/img, function(content, ok, sec) {
+    
+    console.debug(ok);
+    return content;
+  });
+  
+  return content;
 };
 
 /*
@@ -150,9 +163,12 @@ App.methods.underscore = function(content) {
 
 $(function() {
   var from = $("#from");
+  var container = $("#container");
   var to = $("#to");
 
-  var content = from.html();
+  var content = container.html()
+  
+  from.val(content);
   var original = content;
 
   /* String specific methods */
@@ -166,6 +182,6 @@ $(function() {
     lines = App.methods[method](lines);
   });
 
-  from.html(original.replace("\n", "<br/>"));
-  to.html(lines.join("<br/>").replace(/\n/, "<br/>"));
+  from.html(original);
+  to.html(lines.join("\n"));
 });
