@@ -47,7 +47,7 @@ App.methods.url = function(content) {
 };
 
 /*
-  Converts Markdown **Text** into into BBCode's [B] tag..
+  Converts Markdown **Text** into into BBCode's [B] tag.
   @content String The raw document. Each line is in Markdown.
   @return String The raw document. Each line is in BBCode.
 */
@@ -55,12 +55,21 @@ App.methods.strong = function(content) {
   return content.replace(/\*\*([^\*\*]+)\*\*/, '[B]$1[/B]');
 };
 
+/*
+  Converts Markdown *Text* into into BBCode's [I] tag.
+  @content String The raw document. Each line is in Markdown.
+  @return String The raw document. Each line is in BBCode.
+*/
+App.methods.italic = function(content) {
+  return content.replace(/\*([^\*]+)\*/, '[I]$1[/I]');
+};
+
 $(function() {
   var from = $("#from");
   var content = from.html();
   
   /* String specific methods */
-  _.each(["url", "strong"], function(method) {
+  _.each(["url", "strong", "italic"], function(method) {
     content = App.methods[method](content);
   });
   
