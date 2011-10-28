@@ -8,14 +8,14 @@ App.methods = {};
   @return Array<String> A list of lines. Each line is in BBCode.
 */
 App.methods.orderedList = function(lines) {
-  var template = _.template("[LIST=1]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>[/LIST]");
+  var template = _.template("[LIST=1]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
   for (var i = 0; i < lines.length; i++) {
     /* Is this a list item ?*/
-    if (lines[i].match(/^\d+\. ([^\n]+)\n/)) {
-      var matches = [lines[i].replace(/^\d+\. ([^\n]+)\n/, "$1")];
+    if (lines[i].match(/^\d+\. ([^\n]+)/)) {
+      var matches = [lines[i].replace(/^\d+\. ([^\n]+)/, "$1")];
       lines[i] = null;
       for (i = (i + 1); i < lines.length; i++) {
-        if (lines[i].match(/^\d+\. ([^\n]+)\n/)) {
+        if (lines[i].match(/^\d+\. ([^\n]+)/)) {
           matches.push(lines[i].replace(/^\d+\. /, ""));
           lines[i] = null;
         } else {
@@ -27,7 +27,7 @@ App.methods.orderedList = function(lines) {
         This is the end of the list
         Let's render it!
       */
-      lines[i] = template({
+      lines[i - 1] = template({
         list: matches.reverse()
       });
     }
@@ -44,17 +44,17 @@ App.methods.orderedList = function(lines) {
   @lines Array<String> A list of lines. Each line is in Markdown.
   @return Array<String> A list of lines. Each line is in BBCode.
 */
-App.methods.unorderedList = function(lines) {
+App.methods.unorderedList = function(random) {
   var template = _.template("[LIST]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i].replace(/\n/, '') %><% }; %>\n[/LIST]");
-  for (var i = 0; i < lines.length; i++) {
+  for (var i = 0; i < random.length; i++) {
     /* Is this a list item ?*/
-    if (lines[i].match(/^- ([^\n]+)/)) {
-      var matches = [lines[i].replace(/^- /, "")];
-      lines[i] = null;
-      for (i = (i + 1); i < lines.length; i++) {
-        if (lines[i].match(/^- ([^\n]+)/)) {
-          matches.push(lines[i].replace(/^\s*- /, ""));
-          lines[i] = null;
+    if (random[i].match(/^- ([^\n]+)/)) {
+      var matches = [random[i].replace(/^- /, "")];
+      random[i] = null;
+      for (i = (i + 1); i < random.length; i++) {
+        if (random[i].match(/^- ([^\n]+)/)) {
+          matches.push(random[i].replace(/^\s*- /, ""));
+          random[i] = null;
         } else {
           break;
         }
@@ -64,14 +64,14 @@ App.methods.unorderedList = function(lines) {
         This is the end of the list
         Let's render it!
       */
-      lines[i] = template({
+      random[i - 1] = template({
         list: matches.reverse()
       });
     }
   };
-  
+
   /* We've to remove all empty lines. */
-  return _.reject(lines, function(line) {
+  return _.reject(random, function(line) {
     return line === null;
   });
 };
@@ -129,7 +129,7 @@ App.methods.code = function(content) {
     return "\n" + template({
       type: "CODE",
       content: code
-    });
+    }) + "\n";
   });
 };
 
@@ -139,7 +139,7 @@ App.methods.code = function(content) {
   @return String The raw document. Each line is in BBCode.
 */
 App.methods.strong = function(content) {
-  return content.replace(/\*\*([^\*\*]+)\*\*/, '[B]$1[/B]');
+  return content.replace(/[\*]{2}([^\*{2}]+)[\*]{2}/gmi, '[B]$1[/B]');
 };
 
 /*
@@ -148,7 +148,7 @@ App.methods.strong = function(content) {
   @return String The raw document. Each line is in BBCode.
 */
 App.methods.italic = function(content) {
-  return content.replace(/\*([^\*]+)\*/, '[I]$1[/I]');
+  return content.replace(/\*([^\*]+)\*/gmi, '[I]$1[/I]');
 };
 
 /*
@@ -160,8 +160,8 @@ App.methods.underscore = function(content) {
   _.each(["__([^__]+)__", "[^_]_([^\_]+)_[^_]"], function(regexp) {
     content = content.replace(new RegExp(regexp, "gmi"), '\n[U]$1[/U]');
   });
-  
-  return content; 
+
+  return content;
 };
 
 $(function() {
@@ -169,9 +169,12 @@ $(function() {
   var container = $("#container");
   var to = $("#to");
   from.val(container.html());
-  
+
   from.bind("change", function() {
     var content = from.val();
+    
+    content = content.replace(/\r/g,"\n");
+    content = "\n\n" + content + "\n\n";
     /* String specific methods */
     _.each(["url", "strong", "italic", "underscore", "code"], function(method) {
       content = App.methods[method](content);
@@ -179,15 +182,16 @@ $(function() {
 
     /* Line specific methods */
     var lines = content.split(/\n/);
+    console.debug(lines);
     _.each(["unorderedList", "orderedList"], function(method) {
       lines = App.methods[method](lines);
     });
-    
+
     to.html(lines.join("\n"));
   });
-  
+
   from.trigger("change");
-  
+
   $(document).keyup(function() {
     from.trigger("change");
   });
