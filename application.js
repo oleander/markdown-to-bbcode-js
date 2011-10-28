@@ -35,7 +35,7 @@ App.methods.orderedList = function(lines) {
 
   /* We've to remove all empty lines. */
   return _.reject(lines, function(line) {
-    return !line;
+    return line === null;
   });
 };
 
@@ -48,11 +48,11 @@ App.methods.unorderedList = function(lines) {
   var template = _.template("[LIST]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i].replace(/\n/, '') %><% }; %>\n[/LIST]");
   for (var i = 0; i < lines.length; i++) {
     /* Is this a list item ?*/
-    if (lines[i].match(/^\s*- ([^\n]+)\n/)) {
-      var matches = [lines[i].replace(/^\s*- /, "")];
+    if (lines[i].match(/^- ([^\n]+)\n/)) {
+      var matches = [lines[i].replace(/^- /, "")];
       lines[i] = null;
       for (i = (i + 1); i < lines.length; i++) {
-        if (lines[i].match(/^\s*- ([^\n]+)\n/)) {
+        if (lines[i].match(/^- ([^\n]+)\n/)) {
           matches.push(lines[i].replace(/^\s*- /, ""));
           lines[i] = null;
         } else {
@@ -72,7 +72,7 @@ App.methods.unorderedList = function(lines) {
   
   /* We've to remove all empty lines. */
   return _.reject(lines, function(line) {
-    return !line;
+    return line === null;
   });
 };
 
