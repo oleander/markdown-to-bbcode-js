@@ -6,6 +6,27 @@
   <script type="text/javascript" charset="utf-8" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
   <script type="text/javascript" charset="utf-8" src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
   <script type="text/javascript" src="application.js"></script>
+  <style type="text/css" media="screen">
+    #from {
+      position: absolute;
+      width: 40%;
+      height: 100%;
+      left: 0px;
+      border: 1px solid;
+      font-size: 20px;
+      padding: 15px;
+    }
+    
+    #to {
+      position: absolute;
+      width: 40%;
+      height: 100%;
+      right: 0px;
+      border: 1px solid;
+      font-size: 20px;
+      padding: 15px;
+    }
+  </style>
 </head>
 <body>
   <script type="text/template" id="unorderedList-template">
@@ -37,6 +58,18 @@
     - JKL
     - MNO
     
+    ```
+    General code
+    ```
+    
+    ``` html
+    HTML code
+    ```
+    
+    ``` php
+    PHP code
+    ```
+    
     1. Item 1
     2. Item 2
     
@@ -44,7 +77,6 @@
     
     - PQR
     - STU
-    
   </div>
   <div id="to"></div>
 </body>
