@@ -48,11 +48,11 @@ App.methods.unorderedList = function(lines) {
   var template = _.template("[LIST]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i].replace(/\n/, '') %><% }; %>\n[/LIST]");
   for (var i = 0; i < lines.length; i++) {
     /* Is this a list item ?*/
-    if (lines[i].match(/^- ([^\n]+)\n/)) {
+    if (lines[i].match(/^- ([^\n]+)/)) {
       var matches = [lines[i].replace(/^- /, "")];
       lines[i] = null;
       for (i = (i + 1); i < lines.length; i++) {
-        if (lines[i].match(/^- ([^\n]+)\n/)) {
+        if (lines[i].match(/^- ([^\n]+)/)) {
           matches.push(lines[i].replace(/^\s*- /, ""));
           lines[i] = null;
         } else {
@@ -168,23 +168,27 @@ $(function() {
   var from = $("#from");
   var container = $("#container");
   var to = $("#to");
+  from.val(container.html());
+  
+  from.bind("change", function() {
+    var content = from.val();
+    /* String specific methods */
+    _.each(["url", "strong", "italic", "underscore", "code"], function(method) {
+      content = App.methods[method](content);
+    });
 
-  var content = container.html()
-
-  from.val(content);
-  var original = content;
-
-  /* String specific methods */
-  _.each(["url", "strong", "italic", "underscore", "code"], function(method) {
-    content = App.methods[method](content);
+    /* Line specific methods */
+    var lines = content.split(/\n/);
+    _.each(["unorderedList", "orderedList"], function(method) {
+      lines = App.methods[method](lines);
+    });
+    
+    to.html(lines.join("\n"));
   });
-
-  /* Line specific methods */
-  var lines = content.split(/\n/);
-  _.each(["unorderedList", "orderedList"], function(method) {
-    lines = App.methods[method](lines);
+  
+  from.trigger("change");
+  
+  $(document).keyup(function() {
+    from.trigger("change");
   });
-
-  from.html(original);
-  to.html(lines.join("\n"));
 });
