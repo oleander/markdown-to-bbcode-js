@@ -2,6 +2,24 @@ var App = {};
 App.templates = {};
 App.methods = {};
 
+
+var Converter = function() {
+  if ( !(this instanceof arguments.callee) ) {
+    return new arguments.callee(arguments);
+  }
+
+  var self = this;
+  
+  /*
+    Converts Markdown URLs into BBCode URL.
+    @content String The raw document. Each line is in Markdown.
+    @return String The raw document. Each line is in BBCode.
+  */
+  self.url = function(content) {
+    return content.replace(/\[([^\]]+)]\(([^)]+)\)/gmi, '[URL="$2"]$1[/URL]');
+  };
+};
+
 /*
   Converts Markdown ordered lists into BBCode lists.
   @lines Array<String> A list of lines. Each line is in Markdown.
