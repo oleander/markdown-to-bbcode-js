@@ -8,48 +8,28 @@ App.methods.list = function(lines) {
     /* Is this a list item ?*/
     if(lines[i].match(/^\s*- ([^\n]+)/)){
       var matches = [lines[i].replace(/^\s*- /, "")];
+      lines[i] = null;
       for (i = (i + 1); i < lines.length; i++) {
         if(lines[i].match(/^\s*- ([^\n]+)/)){
           matches.push(lines[i].replace(/^\s*- /, ""));
+          lines[i] = null;
         } else {
           break;
         }
       };
-      console.debug("matches", matches);
+      
+      /* 
+        This is the end of the list
+        Let's render it!
+      */
+      lines[i] = template({
+        list: matches.reverse()
+      });
     }
-    
-    // if(lines[i].replace(/\n/, "").trim().length == 0){
-    //   console.debug(lines[i]);
-    //   blank_line = true
-    //   n++;
-    // } else {
-    //   if(blank_line){
-    //     found = lines[i].match(/- ([^\n]+)/);
-    //     if(found){
-    //       if(!item_list[n]){
-    //         item_list[n] = [];
-    //       }
-    //       
-    //       item_list[n].push(found)
-    //     }
-    //   }
-    // }
   };
-  return;
-  console.debug(item_list);
-  return;
-  var items = data.match(/- ([^\n]+)/g);
-  if (items && items.length === 0) {
-    return null;
-  }
-
-  items = _.map(items, function(item) {
-    return item.replace(/^- /, "");
-  });
-
-  return template({
-    list: items
-  });
+  
+  /* We've to remove all empty lines. */
+  return _.reject(lines, function(line){ return ! line; });  
 };
 
 $(function() {
@@ -57,7 +37,5 @@ $(function() {
   var data = from.html();
   var lines = data.match(/\n?.*\n/g);
   
-  setTimeout(function() {
-    App.methods.list(lines);
-  }, 1000);
+  console.debug(App.methods.list(lines));
 });
