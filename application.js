@@ -97,6 +97,8 @@ App.methods.url = function(content) {
   ```
   Some HTML code
   ```
+  
+  `Code!`
 */
 App.methods.code = function(content) {
   var regexp = /```\s*(([^\n]+))?([^```]+)```/img;
@@ -125,11 +127,18 @@ App.methods.code = function(content) {
     });
   });
 
-  return content.replace(/\n[ ]{4}([^\n]+)\n/g, function(content, code) {
-    return "\n" + template({
+  content = content.replace(/\n[ ]{4}([^\n]+)\n/g, function(content, code) {
+    return template({
       type: "CODE",
       content: code
-    }) + "\n";
+    });
+  });
+  
+  return content.replace(/`([^`]+)`/, function(content, code) {
+    return template({
+      type: "CODE",
+      content: code
+    });
   });
 };
 
@@ -182,7 +191,6 @@ $(function() {
 
     /* Line specific methods */
     var lines = content.split(/\n/);
-    console.debug(lines);
     _.each(["unorderedList", "orderedList"], function(method) {
       lines = App.methods[method](lines);
     });
