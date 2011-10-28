@@ -46,12 +46,23 @@ App.methods.url = function(content) {
   return content.replace(/\[([^\]]+)]\(([^)]+)\)/gmi, '[URL="$2"]$1[/URL]');
 };
 
+/*
+  Converts Markdown **Text** into into BBCode's [B] tag..
+  @content String The raw document. Each line is in Markdown.
+  @return String The raw document. Each line is in BBCode.
+*/
+App.methods.strong = function(content) {
+  return content.replace(/\*\*([^\*\*]+)\*\*/, '[B]$1[/B]');
+};
+
 $(function() {
   var from = $("#from");
   var content = from.html();
   
   /* String specific methods */
-  content = App.methods.url(content);
+  _.each(["url", "strong"], function(method) {
+    content = App.methods[method](content);
+  });
   
   /* Line specific methods */
   var lines = content.match(/\n?.*\n/g);
