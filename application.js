@@ -2,6 +2,11 @@ var App = {};
 App.templates = {};
 App.methods = {};
 
+/*
+  Converts Markdown lists into BBCode lists
+  @lines Array<String> A list of lines. Each line is in Markdown.
+  @return Array<String> A list of lines. Each line is in BBCode.
+*/
 App.methods.list = function(lines) {
   var template = _.template($("#list-template").html());
   for (var i = 0; i < lines.length; i++) {
@@ -32,10 +37,25 @@ App.methods.list = function(lines) {
   return _.reject(lines, function(line){ return ! line; });  
 };
 
+/*
+  Converts Markdown URLs into BBCode URL.
+  @content String The raw document. Each line is in Markdown.
+  @return String The raw document. Each line is in BBCode.
+*/
+App.methods.url = function(content) {
+  return content.replace(/\[([^\]]+)]\(([^)]+)\)/gmi, '[URL="$2"]$1[/URL]');
+};
+
 $(function() {
   var from = $("#from");
-  var data = from.html();
-  var lines = data.match(/\n?.*\n/g);
+  var content = from.html();
   
-  console.debug(App.methods.list(lines));
+  /* String specific methods */
+  content = App.methods.url(content);
+  
+  /* Line specific methods */
+  var lines = content.match(/\n?.*\n/g);
+  lines = App.methods.list(lines);
+  
+  from.html(lines.join("\n"));
 });
