@@ -135,7 +135,7 @@ App.methods.code = function(content) {
   });
   
   /* [    ]My code block => [CODE]My code block[/CODE] */
-  content = content.replace(/\n[ ]{4}([^\n]+)\n/g, function(content, code) {
+  content = content.replace(/\n[ ]{4,}([^\n]+)\n/g, function(content, code) {
     return template({
       type: "CODE",
       content: code
@@ -204,7 +204,7 @@ $(function() {
       lines = App.methods[method](lines);
     });
 
-    to.html(lines.join("\n"));
+    to.html(lines.join("\n").replace(/^\n\n/, "").replace(/\n\n$/, ""));
   });
 
   from.trigger("change");
