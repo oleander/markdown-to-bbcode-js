@@ -100,17 +100,39 @@ var Converter = function() {
     var split = document.split(/\n/);
     for (i = 0; i < split.length; i++) {
       if (split[i].match(/^[`]{1,4}/) || split[i].match(/^\[[A-Z]+\]$/)) {
-        for (; i < con; i++) {
+        for (i = i + 1; con; i++) {
           if (split[i].match(/[`]{1,4}$/) || split[i].match(/^\[\/[A-Z]\]$/)) {
             con = false;
           }
         };
       } else {
-        _.each(["url", "italic", "underscore"], function(method) {
+        _.each(["url", "italic", "underscore", "strong"], function(method) {
           split[i] = self[method](split[i]);
+        });
+        
+        _.each(["unorderedList"], function(method) {
+          /*
+          re = {
+            to: 5,
+            data: "template-data",
+            found: true
+          }
+          */
+          var re = self[method](split, i);
+          if(re.found){
+            for (i; i < re.to; i++) {
+              split[i] = null
+            };
+            
+            split[i] = re.data;
+          }
         });
       }
     };
+    
+    split = _.reject(split, function(line) {
+      return line === null;
+    });
     
     return self.code(split.join("\n"));
   };
@@ -141,18 +163,16 @@ var Converter = function() {
     @lines Array<String> A list of lines. Each line is in Markdown.
     @return Array<String> A list of lines. Each line is in BBCode.
   */
-  self.unorderedList = function(lines) {
+  self.unorderedList = function(lines, n) {
     var template, i, matches;
     template = _.template("[LIST]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
-    for (i = 0; i < lines.length; i++) {
+    for (i = n; i < lines.length; i++) {
       /* Is this a list item ?*/
       if (lines[i].match(/^- ([^\n]+)/)) {
         matches = [lines[i].replace(/^- /, "")];
-        lines[i] = null;
         for (i = (i + 1); i < lines.length; i++) {
           if (lines[i].match(/^- ([^\n]+)/)) {
             matches.push(lines[i].replace(/^\s*- /, ""));
-            lines[i] = null;
           } else {
             break;
           }
@@ -162,16 +182,22 @@ var Converter = function() {
           This is the end of the list
           Let's render it!
         */
-        lines[i - 1] = template({
+        data = template({
           list: matches.reverse()
         });
+        
+        return {
+          found: true,
+          data: data,
+          to: i
+        };
+        
+      } else {
+        return {
+          found: false
+        };
       }
     };
-
-    /* We've to remove all empty lines. */
-    return _.reject(lines, function(line) {
-      return line === null;
-    });
   };
 
   /*
@@ -250,7 +276,7 @@ $(function() {
   from.val(container.html());
   var converter = new Converter();
   from.bind("change", function() {
-    to.html(converter.raw(from.val()).toBBCode());
+    to.html(converter.process(from.val()));
   });
 
   from.trigger("change");
