@@ -2,7 +2,6 @@ var App = {};
 App.templates = {};
 App.methods = {};
 
-
 var Converter = function() {
   if ( !(this instanceof arguments.callee) ) {
     return new arguments.callee(arguments);
@@ -17,6 +16,74 @@ var Converter = function() {
   */
   self.url = function(content) {
     return content.replace(/\[([^\]]+)]\(([^)]+)\)/gmi, '[URL="$2"]$1[/URL]');
+  };
+  
+  
+  /*
+    Converts Markdown code tag into BBCode's code tag.
+    @content String The raw document. Each line is in Markdown.
+    @return String The raw document. Each line is in BBCode.
+    A Markdown code block looks like this;
+    ``` html
+    Some HTML code
+    ```
+
+    ```
+    Some HTML code
+    ```
+
+    `Code!`
+  */
+  self.code = function(content) {
+    var regexp = /```\s*(([^\n]+))?\n([^```]+)```/img;
+    var template = _.template("[<%= type %>]<%= content%>[/<%= type %>]");
+
+    var getType = function(match) {
+      match = match || "";
+      var type = match.trim().toUpperCase();
+      if (_.include(["CODE", "HTML", "PHP"], type)) {
+        return type;
+      } else {
+        return "CODE";
+      }
+    };
+
+    /*
+      ``` code
+      My code block
+      ```
+      =>
+      [CODE]My Code block[/CODE]
+    */
+    content = content.replace(regexp, function(full, none, type, code) {
+      var type = getType(type);
+      if (code.trim().length === 0) {
+        code = type;
+      } else {
+        code = code.trim();
+      }
+
+      return template({
+        type: type,
+        content: code
+      });
+    });
+
+    /* [    ]My code block => [CODE]My code block[/CODE] */
+    content = content.replace(/\n[ ]{4,}([^\n]+)\n?/g, function(content, code) {
+      return template({
+        type: "CODE",
+        content: code
+      });
+    });
+
+    /* `My code block` => [CODE]My code block[/CODE] */
+    return content.replace(/`([^`]+)`/g, function(content, code) {
+      return template({
+        type: "CODE",
+        content: code
+      });
+    });
   };
 };
 
@@ -94,80 +161,7 @@ App.methods.unorderedList = function(random) {
   });
 };
 
-/*
-  Converts Markdown URLs into BBCode URL.
-  @content String The raw document. Each line is in Markdown.
-  @return String The raw document. Each line is in BBCode.
-*/
-App.methods.url = function(content) {
-  return content.replace(/\[([^\]]+)]\(([^)]+)\)/gmi, '[URL="$2"]$1[/URL]');
-};
 
-/*
-  Converts Markdown code tag into BBCode's code tag.
-  @content String The raw document. Each line is in Markdown.
-  @return String The raw document. Each line is in BBCode.
-  A Markdown code block looks like this;
-  ``` html
-  Some HTML code
-  ```
-  
-  ```
-  Some HTML code
-  ```
-  
-  `Code!`
-*/
-App.methods.code = function(content) {
-  var regexp = /```\s*(([^\n]+))?([^```]+)```/img;
-  var template = _.template("[<%= type %>]<%= content%>[/<%= type %>]");
-
-  var getType = function(match) {
-    var type = match.trim().toUpperCase();
-    if (_.include(["CODE", "HTML", "PHP"], type)) {
-      return type;
-    } else {
-      return "CODE";
-    }
-  };
-  
-  /*
-    ``` code
-    My code block
-    ```
-    =>
-    [CODE]My Code block[/CODE]
-  */
-  content = content.replace(regexp, function(full, none, type, code) {
-    var type = getType(type);
-    if (code.trim().length === 0) {
-      code = type;
-    } else {
-      code = code.trim();
-    }
-
-    return template({
-      type: type,
-      content: code
-    });
-  });
-  
-  /* [    ]My code block => [CODE]My code block[/CODE] */
-  content = content.replace(/\n[ ]{4,}([^\n]+)\n/g, function(content, code) {
-    return template({
-      type: "CODE",
-      content: code
-    });
-  });
-  
-  /* `My code block` => [CODE]My code block[/CODE] */
-  return content.replace(/`([^`]+)`/g, function(content, code) {
-    return template({
-      type: "CODE",
-      content: code
-    });
-  });
-};
 
 /*
   Converts Markdown **Text** into into BBCode's [B] tag.
