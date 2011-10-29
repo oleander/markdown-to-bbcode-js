@@ -154,44 +154,46 @@ var Converter = function() {
       return line === null;
     });
   };
-};
+  
+  /*
+    Converts Markdown ordered lists into BBCode lists.
+    @lines Array<String> A list of lines. Each line is in Markdown.
+    @return Array<String> A list of lines. Each line is in BBCode.
+  */
+  self.orderedList = function(lines) {
+    var template = _.template("[LIST=1]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
+    for (var i = 0; i < lines.length; i++) {
+      /* Is this a list item ?*/
+      if (lines[i].match(/^\d+\. ([^\n]+)/)) {
+        var matches = [lines[i].replace(/^\d+\. ([^\n]+)/, "$1")];
+        lines[i] = null;
+        for (i = (i + 1); i < lines.length; i++) {
+          if (lines[i].match(/^\d+\. ([^\n]+)/)) {
+            matches.push(lines[i].replace(/^\d+\. /, ""));
+            lines[i] = null;
+          } else {
+            break;
+          }
+        };
 
-/*
-  Converts Markdown ordered lists into BBCode lists.
-  @lines Array<String> A list of lines. Each line is in Markdown.
-  @return Array<String> A list of lines. Each line is in BBCode.
-*/
-App.methods.orderedList = function(lines) {
-  var template = _.template("[LIST=1]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
-  for (var i = 0; i < lines.length; i++) {
-    /* Is this a list item ?*/
-    if (lines[i].match(/^\d+\. ([^\n]+)/)) {
-      var matches = [lines[i].replace(/^\d+\. ([^\n]+)/, "$1")];
-      lines[i] = null;
-      for (i = (i + 1); i < lines.length; i++) {
-        if (lines[i].match(/^\d+\. ([^\n]+)/)) {
-          matches.push(lines[i].replace(/^\d+\. /, ""));
-          lines[i] = null;
-        } else {
-          break;
-        }
-      };
+        /* 
+          This is the end of the list
+          Let's render it!
+        */
+        lines[i - 1] = template({
+          list: matches.reverse()
+        });
+      }
+    };
 
-      /* 
-        This is the end of the list
-        Let's render it!
-      */
-      lines[i - 1] = template({
-        list: matches.reverse()
-      });
-    }
+    /* We've to remove all empty lines. */
+    return _.reject(lines, function(line) {
+      return line === null;
+    });
   };
-
-  /* We've to remove all empty lines. */
-  return _.reject(lines, function(line) {
-    return line === null;
-  });
 };
+
+
 
 $(function() {
   var from = $("#from");
