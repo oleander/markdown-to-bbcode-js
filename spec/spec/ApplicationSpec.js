@@ -15,35 +15,35 @@ describe("Converter", function() {
 
   describe("#code", function() {
     it("converters markdown code `Code` to a BBCode tag", function() {
-      expect(converter.code("`Code!`")).toEqual('[CODE]Code![/CODE]');
+      expect(converter.code("`Code!`")).toEqual('[CODE]\nCode!\n[/CODE]');
     });
 
     it("converters markdown code ``` to a BBCode tag", function() {
-      expect(converter.code("```\nCode!\n```")).toEqual('[CODE]Code![/CODE]');
+      expect(converter.code("```\nCode!\n```")).toEqual('[CODE]\nCode!\n[/CODE]');
     });
 
     it("converters markdown html code ``` to a BBCode tag", function() {
-      expect(converter.code("``` html\nCode!\n```")).toEqual('[HTML]Code![/HTML]');
+      expect(converter.code("``` html\nCode!\n```")).toEqual('[HTML]\nCode!\n[/HTML]');
     });
 
     it("converters markdown php code ``` to a BBCode tag", function() {
-      expect(converter.code("``` php\nCode!\n```")).toEqual('[PHP]Code![/PHP]');
+      expect(converter.code("``` php\nCode!\n```")).toEqual('[PHP]\nCode!\n[/PHP]');
     });
 
     it("converters markdown php code ``` to a BBCode tag", function() {
-      expect(converter.code("```php\nCode!\n```")).toEqual('[PHP]Code![/PHP]');
+      expect(converter.code("```php\nCode!\n```")).toEqual('[PHP]\nCode!\n[/PHP]');
     });
 
     it("converters markdown random code ``` to a BBCode tag", function() {
-      expect(converter.code("``` random\nCode!\n```")).toEqual('[CODE]Code![/CODE]');
+      expect(converter.code("``` random\nCode!\n```")).toEqual('[CODE]\nCode!\n[/CODE]');
     });
 
     it("converters markdown 4 space indent to a BBCode tag, start with a new line", function() {
-      expect(converter.code("\n    This is code!")).toEqual('\n[CODE]This is code![/CODE]');
+      expect(converter.code("\n    This is code!")).toEqual('\n[CODE]\nThis is code!\n[/CODE]');
     });
 
     it("converters markdown 4 space indent to a BBCode tag, start and end with a new line", function() {
-      expect(converter.code("\n    This is code!\n")).toEqual('\n[CODE]This is code![/CODE]\n');
+      expect(converter.code("\n    This is code!\n")).toEqual('\n[CODE]\nThis is code!\n[/CODE]\n');
     });
   });
 

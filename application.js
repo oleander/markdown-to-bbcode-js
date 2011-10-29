@@ -35,7 +35,7 @@ var Converter = function() {
   */
   self.code = function(content) {
     var regexp = /```\s*(([^\n]+))?\n([^```]+)```/gm;
-    var template = _.template("[<%= type %>]<%= content%>[/<%= type %>]");
+    var template = _.template("[<%= type %>]\n<%= content%>\n[/<%= type %>]");
 
     var getType = function(match) {
       match = match || "";
