@@ -100,7 +100,7 @@ var Converter = function() {
     @return String The raw document. Each line is in BBCode.
   */
   self.italic = function(content) {
-    return content.replace(/(?!.*\*{2})\*([^\*\n]+)\*(?!\*)/, "[I]$1[/I]")
+    return content.replace(/(?!.*\*{2})\*([^\*\n]+)\*(?!\*)/gmi, "[I]$1[/I]")
   };
 
   /*

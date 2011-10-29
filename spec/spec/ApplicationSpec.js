@@ -67,6 +67,10 @@ describe("Converter", function() {
     it("should not convert to strong tag if a new line exists within the **** block", function() {
       expect(converter.strong("**I'm \nStrong!**")).not.toEqual("[B]I'm Strong![/B]");
     });
+    
+    it("handles multiply tags ", function() {
+      expect(converter.strong("**I'm Strong!** and **So am I**")).toEqual("[B]I'm Strong![/B] and [B]So am I[/B]");
+    });
   });
 
   describe("#italic", function() {
@@ -93,7 +97,11 @@ describe("Converter", function() {
     it("should not convert to italic tag if a new line exists within the ** block", function() {
       expect(converter.italic("*I'm \n NOT Strong!*")).not.toMatch(/\[I\]/);
     });
-
+    
+    it("handles multiply tags ", function() {
+      expect(converter.italic("*I'm NOT Strong!* and *So am I*")).toEqual("[I]I'm NOT Strong![/I] and [I]So am I[/I]");
+    });
+    
     it("should not touch markdown's **** notation", function() {
       expect(converter.italic("**Strong!**")).not.toEqual("*[I]Strong![/I]*");
     });
