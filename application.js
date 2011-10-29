@@ -189,7 +189,7 @@ var Converter = function() {
         return {
           found: true,
           data: data,
-          to: i
+          to: (i - 1)
         };
         
       } else {
