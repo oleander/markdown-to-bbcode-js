@@ -49,27 +49,38 @@ describe("Converter", function() {
 
   describe("#strong", function() {
     it("converters markdown **** to a BBCode [B] tag", function() {
-      expect(converter.strong("**I'm Strong!**")).toEqual("[B]I'm Strong![/B]");
+      expect(converter.strong(["**I'm Strong!**"])).toEqual(["[B]I'm Strong![/B]"]);
+    });
+
+    it("should ignore code blocks - ``", function() {
+      expect(converter.strong(["`**Code**`"])).toEqual(["`**Code**`"]);
+    });
+
+    it("should ignore code blocks - ``` ```", function() {
+      var code = ["```", "**Code**", "```"];
+      expect(converter.strong(code)).toEqual(code);
+    });
+
+    it("should ignore code blocks - [CODE]\n**My code**\n[/CODE]", function() {
+      var code = ["[CODE]", "**My code**", "[/CODE]"];
+      expect(converter.strong(code)).toEqual(code);
+    });
+
+    it("should ignore code blocks - ``` code ```", function() {
+      var code = ["``` code", "**Code**", "```"];
+      expect(converter.strong(code)).toEqual(code);
     });
 
     it("converters markdown **** to a BBCode [B] tag, using new lines", function() {
-      expect(converter.strong("\n**I'm Strong!**\n")).toEqual("\n[B]I'm Strong![/B]\n");
-    });
-
-    it("converters markdown **** to a BBCode [B] tag, using new lines in the end", function() {
-      expect(converter.strong("**I'm Strong!**\n")).toEqual("[B]I'm Strong![/B]\n");
-    });
-
-    it("converters markdown **** to a BBCode [B] tag, using new lines at start", function() {
-      expect(converter.strong("\n**I'm Strong!**")).toEqual("\n[B]I'm Strong![/B]");
+      expect(converter.strong(["**I'm Strong!**"])).toEqual(["[B]I'm Strong![/B]"]);
     });
 
     it("should not convert to strong tag if a new line exists within the **** block", function() {
-      expect(converter.strong("**I'm \nStrong!**")).not.toEqual("[B]I'm Strong![/B]");
+      expect(converter.strong(["**I'm ", " Strong!**"])).not.toEqual(["[B]I'm Strong![/B]"]);
     });
-    
+
     it("handles multiply tags ", function() {
-      expect(converter.strong("**I'm Strong!** and **So am I**")).toEqual("[B]I'm Strong![/B] and [B]So am I[/B]");
+      expect(converter.strong(["**I'm Strong!** and **So am I**"])).toEqual(["[B]I'm Strong![/B] and [B]So am I[/B]"]);
     });
   });
 
@@ -97,11 +108,11 @@ describe("Converter", function() {
     it("should not convert to italic tag if a new line exists within the ** block", function() {
       expect(converter.italic("*I'm \n NOT Strong!*")).not.toMatch(/\[I\]/);
     });
-    
+
     it("handles multiply tags ", function() {
       expect(converter.italic("*I'm NOT Strong!* and *So am I*")).toEqual("[I]I'm NOT Strong![/I] and [I]So am I[/I]");
     });
-    
+
     it("should not touch markdown's **** notation", function() {
       expect(converter.italic("**Strong!**")).not.toEqual("*[I]Strong![/I]*");
     });
@@ -127,11 +138,11 @@ describe("Converter", function() {
     it("converters markdown __Text__ to a BBCode [U] tag, using new lines", function() {
       expect(converter.underscore("\n__Underscore me__\n")).toEqual("\n[U]Underscore me[/U]\n");
     });
-    
+
     it("handles multiply tags ", function() {
       expect(converter.underscore("_Underscore me_, _I'll_")).toEqual("[U]Underscore me[/U], [U]I'll[/U]");
     });
-    
+
     it("converters markdown _Text_ to a BBCode [U] tag, using new lines in the end", function() {
       expect(converter.underscore("_Underscore me_\n")).toEqual("[U]Underscore me[/U]\n");
     });
@@ -190,7 +201,7 @@ describe("Converter", function() {
       expect(converter.orderedList(list)).toEqual(list);
     });
   });
-  
+
   describe("a complete document", function() {
     it("should be able to convert it", function() {
       var markdown = $("#markdown").html();

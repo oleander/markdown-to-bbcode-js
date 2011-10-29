@@ -87,11 +87,25 @@ var Converter = function() {
 
   /*
     Converts Markdown **Text** into into BBCode's [B] tag.
-    @content String The raw document. Each line is in Markdown.
+    @content Array The raw document. Each line is in Markdown.
     @return String The raw document. Each line is in BBCode.
+    It ignores markdown that are inside a code block.
   */
-  self.strong = function(content) {
-    return content.replace(/[\*]{2}([^\*{2}]+)[\*]{2}/gm, '[B]$1[/B]');
+  self.strong = function(split) {
+    var con = true, i;
+    for (i = 0; i < split.length; i++) {
+      if (split[i].match(/^[`]{1,4}/) || split[i].match(/^\[[A-Z]+\]$/)) {
+        for (; i < con; i++) {
+          if (split[i].match(/[`]{1,4}$/) || split[i].match(/^\[\/[A-Z]\]$/)) {
+            con = false;
+          }
+        };
+      } else {
+        split[i] = split[i].replace(/[\*]{2}([^\*{2}]+)[\*]{2}/mg, '[B]$1[/B]');
+      }
+    };
+    
+    return split;
   };
 
   /*
@@ -111,7 +125,8 @@ var Converter = function() {
   self.underscore = function(content) {
     return _.reduce(["__([^__]+)__", "(?!.*\_{2})\_([^\_\n]+)\_(?!\_)"], function(content, regexp) {
       return content.replace(new RegExp(regexp, "gmi"), '[U]$1[/U]');
-    },content);
+    },
+    content);
   };
 
   /*
@@ -189,30 +204,31 @@ var Converter = function() {
       return line === null;
     });
   };
-  
+
   /*
     @data String The document to be converted later on
     @return A Converter object
   */
   self.raw = function(data) {
-    self.data = data; return self;
+    self.data = data;
+    return self;
   };
-  
+
   /*
     @return A BBCode version of the @data var
   */
   self.toBBCode = function() {
     content = self.data.replace(/\r/g, "\n");
     content = "\n\n" + content + "\n\n";
-    
+
     /* String specific methods */
-    _.each(["url", "strong", "italic", "underscore", "code"], function(method) {
+    _.each(["url", "italic", "underscore", "code"], function(method) {
       content = self[method](content);
     });
 
     /* Line specific methods */
     var lines = content.split(/\n/);
-    _.each(["unorderedList", "orderedList"], function(method) {
+    _.each(["unorderedList", "orderedList", "strong"], function(method) {
       lines = self[method](lines);
     });
 
