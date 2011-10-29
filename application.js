@@ -91,7 +91,7 @@ var Converter = function() {
     @return String The raw document. Each line is in BBCode.
   */
   self.strong = function(content) {
-    return content.replace(/\n?[\*]{2}([^\*{2}]+)[\*]{2}\n?/gmi, '[B]$1[/B]');
+    return content.replace(/[\*]{2}([^\*{2}]+)[\*]{2}/gmi, '[B]$1[/B]');
   };
 
   /*

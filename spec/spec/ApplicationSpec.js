@@ -53,15 +53,15 @@ describe("Converter", function() {
     });
 
     it("converters markdown **** to a BBCode [B] tag, using new lines", function() {
-      expect(converter.strong("\n**I'm Strong!**\n")).toEqual("[B]I'm Strong![/B]");
+      expect(converter.strong("\n**I'm Strong!**\n")).toEqual("\n[B]I'm Strong![/B]\n");
     });
 
     it("converters markdown **** to a BBCode [B] tag, using new lines in the end", function() {
-      expect(converter.strong("**I'm Strong!**\n")).toEqual("[B]I'm Strong![/B]");
+      expect(converter.strong("**I'm Strong!**\n")).toEqual("[B]I'm Strong![/B]\n");
     });
 
     it("converters markdown **** to a BBCode [B] tag, using new lines at start", function() {
-      expect(converter.strong("\n**I'm Strong!**")).toEqual("[B]I'm Strong![/B]");
+      expect(converter.strong("\n**I'm Strong!**")).toEqual("\n[B]I'm Strong![/B]");
     });
 
     it("should not convert to strong tag if a new line exists within the **** block", function() {
