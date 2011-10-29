@@ -161,11 +161,12 @@ var Converter = function() {
     @return Array<String> A list of lines. Each line is in BBCode.
   */
   self.orderedList = function(lines) {
-    var template = _.template("[LIST=1]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
-    for (var i = 0; i < lines.length; i++) {
+    var template, matches, i;
+    template = _.template("[LIST=1]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
+    for (i = 0; i < lines.length; i++) {
       /* Is this a list item ?*/
       if (lines[i].match(/^\d+\. ([^\n]+)/)) {
-        var matches = [lines[i].replace(/^\d+\. ([^\n]+)/, "$1")];
+        matches = [lines[i].replace(/^\d+\. ([^\n]+)/, "$1")];
         lines[i] = null;
         for (i = (i + 1); i < lines.length; i++) {
           if (lines[i].match(/^\d+\. ([^\n]+)/)) {
