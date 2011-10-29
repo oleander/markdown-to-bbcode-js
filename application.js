@@ -189,6 +189,35 @@ var Converter = function() {
       return line === null;
     });
   };
+  
+  /*
+    @data String The document to be converted later on
+    @return A Converter object
+  */
+  self.raw = function(data) {
+    self.data = data; return self;
+  };
+  
+  /*
+    @return A BBCode version of the @data var
+  */
+  self.toBBCode = function() {
+    content = self.data.replace(/\r/g, "\n");
+    content = "\n\n" + content + "\n\n";
+    
+    /* String specific methods */
+    _.each(["url", "strong", "italic", "underscore", "code"], function(method) {
+      content = self[method](content);
+    });
+
+    /* Line specific methods */
+    var lines = content.split(/\n/);
+    _.each(["unorderedList", "orderedList"], function(method) {
+      lines = self[method](lines);
+    });
+
+    return lines.join("\n").replace(/^\n\n/, "").replace(/\n\n$/, "");
+  };
 };
 
 $(function() {

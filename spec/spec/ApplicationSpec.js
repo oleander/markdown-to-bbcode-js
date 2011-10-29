@@ -147,8 +147,8 @@ describe("Converter", function() {
 
   describe("#unorderedList", function() {
     it("should be able to convert a markdown list to a BBCode list", function() {
-      var lines = ["- Item 1", "- Item 2"];
-      expect(converter.unorderedList(lines).join("\n")).toEqual("[LIST]\n[*]Item 1\n[*]Item 2\n[/LIST]");
+      var lines = ["- Item 1", "- Item 2", "    This is"];
+      expect(converter.unorderedList(lines).join("\n")).toEqual("[LIST]\n[*]Item 1\n[*]Item 2\n[/LIST]\n    This is");
     });
 
     it("should treat a new line as a new list", function() {
@@ -176,6 +176,14 @@ describe("Converter", function() {
     it("should not touch unordered lists", function() {
       var list = ["- Item 1", "- Item 2"];
       expect(converter.orderedList(list)).toEqual(list);
+    });
+  });
+  
+  describe("a complete document", function() {
+    it("should be able to convert it", function() {
+      var markdown = $("#markdown").html();
+      var bbcode = $("#bbcode").html();
+      expect(converter.raw(markdown).toBBCode()).toEqual(bbcode);
     });
   });
 });
