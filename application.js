@@ -87,12 +87,17 @@ var Converter = function() {
 
   /*
     Converts Markdown **Text** into into BBCode's [B] tag.
-    @content Array The raw document. Each line is in Markdown.
+    @content String The raw document. Each line is in Markdown.
     @return String The raw document. Each line is in BBCode.
     It ignores markdown that are inside a code block.
   */
-  self.strong = function(split) {
-    var con = true, i;
+  self.strong = function(content) {
+    return content.replace(/[\*]{2}([^\*{2}]+)[\*]{2}/mg, '[B]$1[/B]');
+  };
+
+  self.process = function(document) {
+    var i, split, con = true;
+    var split = document.split(/\n/);
     for (i = 0; i < split.length; i++) {
       if (split[i].match(/^[`]{1,4}/) || split[i].match(/^\[[A-Z]+\]$/)) {
         for (; i < con; i++) {
@@ -101,11 +106,13 @@ var Converter = function() {
           }
         };
       } else {
-        split[i] = split[i].replace(/[\*]{2}([^\*{2}]+)[\*]{2}/mg, '[B]$1[/B]');
+        _.each(["url", "italic", "underscore"], function(method) {
+          split[i] = self[method](split[i]);
+        });
       }
     };
     
-    return split;
+    return self.code(split.join("\n"));
   };
 
   /*
