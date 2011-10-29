@@ -3,12 +3,12 @@ App.templates = {};
 App.methods = {};
 
 var Converter = function() {
-  if ( !(this instanceof arguments.callee) ) {
+  if (! (this instanceof arguments.callee)) {
     return new arguments.callee(arguments);
   }
 
   var self = this;
-  
+
   /*
     Converts Markdown URLs into BBCode URL.
     @content String The raw document. Each line is in Markdown.
@@ -17,8 +17,7 @@ var Converter = function() {
   self.url = function(content) {
     return content.replace(/\[([^\]]+)]\(([^)]+)\)/gmi, '[URL="$2"]$1[/URL]');
   };
-  
-  
+
   /*
     Converts Markdown code tag into BBCode's code tag.
     @content String The raw document. Each line is in Markdown.
@@ -85,7 +84,7 @@ var Converter = function() {
       });
     });
   };
-  
+
   /*
     Converts Markdown **Text** into into BBCode's [B] tag.
     @content String The raw document. Each line is in Markdown.
@@ -94,7 +93,7 @@ var Converter = function() {
   self.strong = function(content) {
     return content.replace(/\n?[\*]{2}([^\*{2}]+)[\*]{2}\n?/gmi, '[B]$1[/B]');
   };
-  
+
   /*
     Converts Markdown *Text* into into BBCode's [I] tag.
     @content String The raw document. Each line is in Markdown.
@@ -103,20 +102,18 @@ var Converter = function() {
   self.italic = function(content) {
     return content.replace(/(?!.*\*{2})\*([^\*\n]+)\*(?!\*)/, "[I]$1[/I]")
   };
-  
+
   /*
     Converts Markdown _Text_ and __Text__ into into BBCode's [U] tag.
     @content String The raw document. Each line is in Markdown.
     @return String The raw document. Each line is in BBCode.
   */
   self.underscore = function(content) {
-    _.each(["__([^__]+)__", "(?!.*\_{2})\_([^\_\n]+)\_(?!\_)"], function(regexp) {
-      content = content.replace(new RegExp(regexp, "gmi"), '[U]$1[/U]');
-    });
-
-    return content;
+    return _.reduce(["__([^__]+)__", "(?!.*\_{2})\_([^\_\n]+)\_(?!\_)"], function(content, regexp) {
+      return content.replace(new RegExp(regexp, "gmi"), '[U]$1[/U]');
+    },content);
   };
-  
+
   /*
     Converts Markdown unordered lists into BBCode lists.
     @lines Array<String> A list of lines. Each line is in Markdown.
@@ -154,7 +151,7 @@ var Converter = function() {
       return line === null;
     });
   };
-  
+
   /*
     Converts Markdown ordered lists into BBCode lists.
     @lines Array<String> A list of lines. Each line is in Markdown.
@@ -194,8 +191,6 @@ var Converter = function() {
   };
 };
 
-
-
 $(function() {
   var from = $("#from");
   var container = $("#container");
@@ -204,8 +199,8 @@ $(function() {
 
   from.bind("change", function() {
     var content = from.val();
-    
-    content = content.replace(/\r/g,"\n");
+
+    content = content.replace(/\r/g, "\n");
     content = "\n\n" + content + "\n\n";
     /* String specific methods */
     _.each(["url", "strong", "italic", "underscore", "code"], function(method) {
