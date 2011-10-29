@@ -94,6 +94,15 @@ var Converter = function() {
   self.strong = function(content) {
     return content.replace(/\n?[\*]{2}([^\*{2}]+)[\*]{2}\n?/gmi, '[B]$1[/B]');
   };
+  
+  /*
+    Converts Markdown *Text* into into BBCode's [I] tag.
+    @content String The raw document. Each line is in Markdown.
+    @return String The raw document. Each line is in BBCode.
+  */
+  self.italic = function(content) {
+    return content.replace(/\n?([^*]|^)\*([^*]+)\*([^*]|$)\n?/gmi, "[I]$2[/I]")
+  };
 };
 
 /*

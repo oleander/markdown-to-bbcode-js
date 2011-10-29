@@ -68,4 +68,35 @@ describe("Converter", function() {
       expect(converter.strong("**I'm \nStrong!**")).not.toEqual("[B]I'm Strong![/B]");
     });    
   });
+  
+  describe("#italic", function() {
+    it("converters markdown ** to a BBCode [I] tag", function() {
+      expect(converter.italic("*I'm NOT Strong!*")).toEqual("[I]I'm NOT Strong![/I]");
+    });
+    
+    it("converters markdown ** to a BBCode [I] tag, using new lines", function() {
+      expect(converter.italic("\n*I'm NOT Strong!*\n")).toEqual("[I]I'm NOT Strong![/I]");
+    });
+    
+    it("converters markdown ** to a BBCode [I] tag, using new lines in the end", function() {
+      expect(converter.italic("*I'm NOT Strong!*\n")).toEqual("[I]I'm NOT Strong![/I]");
+    });
+    
+    it("converters markdown ** to a BBCode [I] tag, using new lines at start", function() {
+      expect(converter.italic("\n*I'm NOT Strong!*")).toEqual("[I]I'm NOT Strong![/I]");
+    });
+    
+    it("converters markdown ** to a BBCode [I] tag, even if within another string", function() {
+      expect(converter.italic("Content *I'm NOT Strong!* Content")).toEqual("[I]I'm NOT Strong![/I]");
+    });
+    
+    it("should not convert to italic tag if a new line exists within the ** block", function() {
+      expect(converter.italic("*I'm \n NOT Strong!*")).not.toEqual("[I]I'm NOT Strong![/I]");
+    });
+    
+    it("should not touch markdown's **** notation", function() {
+      expect(converter.italic("**Strong!**")).not.toEqual("*[I]Strong![/I]*");
+    });    
+    
+  });
 });
