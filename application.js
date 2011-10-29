@@ -101,7 +101,7 @@ var Converter = function() {
     @return String The raw document. Each line is in BBCode.
   */
   self.italic = function(content) {
-    return content.replace(/(?!.*\*{2})\*([^\*]+)\*(?!\*)/, "[I]$1[/I]")
+    return content.replace(/(?!.*\*{2})\*([^\*\n]+)\*(?!\*)/, "[I]$1[/I]")
   };
   
   /*
@@ -110,8 +110,8 @@ var Converter = function() {
     @return String The raw document. Each line is in BBCode.
   */
   self.underscore = function(content) {
-    _.each(["__([^__]+)__", "[^_]_([^\_]+)_[^_]"], function(regexp) {
-      content = content.replace(new RegExp(regexp, "gmi"), '\n[U]$1[/U]');
+    _.each(["__([^__]+)__", "(?!.*\_{2})\_([^\_\n]+)\_(?!\_)"], function(regexp) {
+      content = content.replace(new RegExp(regexp, "gmi"), '[U]$1[/U]');
     });
 
     return content;
