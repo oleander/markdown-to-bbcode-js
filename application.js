@@ -225,24 +225,9 @@ $(function() {
   var container = $("#container");
   var to = $("#to");
   from.val(container.html());
-
+  var converter = new Converter();
   from.bind("change", function() {
-    var content = from.val();
-
-    content = content.replace(/\r/g, "\n");
-    content = "\n\n" + content + "\n\n";
-    /* String specific methods */
-    _.each(["url", "strong", "italic", "underscore", "code"], function(method) {
-      content = App.methods[method](content);
-    });
-
-    /* Line specific methods */
-    var lines = content.split(/\n/);
-    _.each(["unorderedList", "orderedList"], function(method) {
-      lines = App.methods[method](lines);
-    });
-
-    to.html(lines.join("\n").replace(/^\n\n/, "").replace(/\n\n$/, ""));
+    to.html(converter.raw(from.val()).toBBCode());
   });
 
   from.trigger("change");
