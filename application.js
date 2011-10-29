@@ -34,7 +34,7 @@ var Converter = function() {
     `Code!`
   */
   self.code = function(content) {
-    var regexp = /```\s*(([^\n]+))?\n([^```]+)```/img;
+    var regexp = /```\s*(([^\n]+))?\n([^```]+)```/gm;
     var template = _.template("[<%= type %>]<%= content%>[/<%= type %>]");
 
     var getType = function(match) {
@@ -69,7 +69,7 @@ var Converter = function() {
     });
 
     /* [    ]My code block => [CODE]My code block[/CODE] */
-    content = content.replace(/[ ]{4,}([^\n]+)/g, function(content, code) {
+    content = content.replace(/[ ]{4,}([^\n]+)/gm, function(content, code) {
       return template({
         type: "CODE",
         content: code
@@ -77,7 +77,7 @@ var Converter = function() {
     });
 
     /* `My code block` => [CODE]My code block[/CODE] */
-    return content.replace(/`([^`]+)`/g, function(content, code) {
+    return content.replace(/`([^`]+)`/gm, function(content, code) {
       return template({
         type: "CODE",
         content: code
@@ -91,7 +91,7 @@ var Converter = function() {
     @return String The raw document. Each line is in BBCode.
   */
   self.strong = function(content) {
-    return content.replace(/[\*]{2}([^\*{2}]+)[\*]{2}/gmi, '[B]$1[/B]');
+    return content.replace(/[\*]{2}([^\*{2}]+)[\*]{2}/gm, '[B]$1[/B]');
   };
 
   /*
@@ -100,7 +100,7 @@ var Converter = function() {
     @return String The raw document. Each line is in BBCode.
   */
   self.italic = function(content) {
-    return content.replace(/(?!.*\*{2})\*([^\*\n]+)\*(?!\*)/gmi, "[I]$1[/I]")
+    return content.replace(/(?!.*\*{2})\*([^\*\n]+)\*(?!\*)/gm, "[I]$1[/I]")
   };
 
   /*

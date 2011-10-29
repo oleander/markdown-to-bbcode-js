@@ -127,7 +127,11 @@ describe("Converter", function() {
     it("converters markdown __Text__ to a BBCode [U] tag, using new lines", function() {
       expect(converter.underscore("\n__Underscore me__\n")).toEqual("\n[U]Underscore me[/U]\n");
     });
-
+    
+    it("handles multiply tags ", function() {
+      expect(converter.underscore("_Underscore me_, _I'll_")).toEqual("[U]Underscore me[/U], [U]I'll[/U]");
+    });
+    
     it("converters markdown _Text_ to a BBCode [U] tag, using new lines in the end", function() {
       expect(converter.underscore("_Underscore me_\n")).toEqual("[U]Underscore me[/U]\n");
     });
