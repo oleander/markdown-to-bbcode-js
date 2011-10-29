@@ -75,6 +75,36 @@ describe("Converter", function() {
     });
     
     it("converters markdown ** to a BBCode [I] tag, using new lines", function() {
+      expect(converter.italic("\n*I'm NOT Strong!*\n")).toEqual("\n[I]I'm NOT Strong![/I]\n");
+    });
+    
+    it("converters markdown ** to a BBCode [I] tag, using new lines in the end", function() {
+      expect(converter.italic("*I'm NOT Strong!*\n")).toEqual("[I]I'm NOT Strong![/I]\n");
+    });
+    
+    it("converters markdown ** to a BBCode [I] tag, using new lines at start", function() {
+      expect(converter.italic("\n*I'm NOT Strong!*")).toEqual("\n[I]I'm NOT Strong![/I]");
+    });
+    
+    it("converters markdown ** to a BBCode [I] tag, even if within another string", function() {
+      expect(converter.italic("Content *I'm NOT Strong!* Content")).toEqual("Content [I]I'm NOT Strong![/I] Content");
+    });
+    
+    it("should not convert to italic tag if a new line exists within the ** block", function() {
+      expect(converter.italic("*I'm \n NOT Strong!*")).not.toEqual("[I]I'm NOT Strong![/I]");
+    });
+    
+    it("should not touch markdown's **** notation", function() {
+      expect(converter.italic("**Strong!**")).not.toEqual("*[I]Strong![/I]*");
+    });
+  });
+  
+  describe("#underscore", function() {
+    it("converters markdown __ to a BBCode [U] tag", function() {
+      expect(converter.underscore("_UnderScore me_")).toEqual("[U]Underscore me[/U]");
+    });
+    
+    it("converters markdown ** to a BBCode [I] tag, using new lines", function() {
       expect(converter.italic("\n*I'm NOT Strong!*\n")).toEqual("[I]I'm NOT Strong![/I]");
     });
     
@@ -96,7 +126,6 @@ describe("Converter", function() {
     
     it("should not touch markdown's **** notation", function() {
       expect(converter.italic("**Strong!**")).not.toEqual("*[I]Strong![/I]*");
-    });    
-    
+    });
   });
 });

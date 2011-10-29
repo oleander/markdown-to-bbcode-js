@@ -101,7 +101,20 @@ var Converter = function() {
     @return String The raw document. Each line is in BBCode.
   */
   self.italic = function(content) {
-    return content.replace(/\n?([^*]|^)\*([^*]+)\*([^*]|$)\n?/gmi, "[I]$2[/I]")
+    return content.replace(/(?!.*\*{2})\*([^\*]+)\*(?!\*)/, "[I]$1[/I]")
+  };
+  
+  /*
+    Converts Markdown _Text_ and __Text__ into into BBCode's [U] tag.
+    @content String The raw document. Each line is in Markdown.
+    @return String The raw document. Each line is in BBCode.
+  */
+  self.underscore = function(content) {
+    _.each(["__([^__]+)__", "[^_]_([^\_]+)_[^_]"], function(regexp) {
+      content = content.replace(new RegExp(regexp, "gmi"), '\n[U]$1[/U]');
+    });
+
+    return content;
   };
 };
 
@@ -177,28 +190,6 @@ App.methods.unorderedList = function(random) {
   return _.reject(random, function(line) {
     return line === null;
   });
-};
-
-/*
-  Converts Markdown *Text* into into BBCode's [I] tag.
-  @content String The raw document. Each line is in Markdown.
-  @return String The raw document. Each line is in BBCode.
-*/
-App.methods.italic = function(content) {
-  return content.replace(/\*([^\*]+)\*/gmi, '[I]$1[/I]');
-};
-
-/*
-  Converts Markdown _Text_ and __Text__ into into BBCode's [U] tag.
-  @content String The raw document. Each line is in Markdown.
-  @return String The raw document. Each line is in BBCode.
-*/
-App.methods.underscore = function(content) {
-  _.each(["__([^__]+)__", "[^_]_([^\_]+)_[^_]"], function(regexp) {
-    content = content.replace(new RegExp(regexp, "gmi"), '\n[U]$1[/U]');
-  });
-
-  return content;
 };
 
 $(function() {
