@@ -45,6 +45,27 @@ describe("Converter", function() {
     it("converters markdown 4 space indent to a BBCode tag, start and end with a new line", function() {
       expect(converter.code("\n    This is code!\n")).toEqual('[CODE]This is code![/CODE]');
     });
+  });
+  
+  describe("#strong", function() {
+    it("converters markdown **** to a BBCode [B] tag", function() {
+      expect(converter.strong("**I'm Strong!**")).toEqual("[B]I'm Strong![/B]");
+    });
     
+    it("converters markdown **** to a BBCode [B] tag, using new lines", function() {
+      expect(converter.strong("\n**I'm Strong!**\n")).toEqual("[B]I'm Strong![/B]");
+    });
+    
+    it("converters markdown **** to a BBCode [B] tag, using new lines in the end", function() {
+      expect(converter.strong("**I'm Strong!**\n")).toEqual("[B]I'm Strong![/B]");
+    });
+    
+    it("converters markdown **** to a BBCode [B] tag, using new lines at start", function() {
+      expect(converter.strong("\n**I'm Strong!**")).toEqual("[B]I'm Strong![/B]");
+    });
+    
+    it("should not convert to strong tag if a new line exists within the **** block", function() {
+      expect(converter.strong("**I'm \nStrong!**")).not.toEqual("[B]I'm Strong![/B]");
+    });    
   });
 });

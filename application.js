@@ -85,6 +85,15 @@ var Converter = function() {
       });
     });
   };
+  
+  /*
+    Converts Markdown **Text** into into BBCode's [B] tag.
+    @content String The raw document. Each line is in Markdown.
+    @return String The raw document. Each line is in BBCode.
+  */
+  self.strong = function(content) {
+    return content.replace(/\n?[\*]{2}([^\*{2}]+)[\*]{2}\n?/gmi, '[B]$1[/B]');
+  };
 };
 
 /*
@@ -159,17 +168,6 @@ App.methods.unorderedList = function(random) {
   return _.reject(random, function(line) {
     return line === null;
   });
-};
-
-
-
-/*
-  Converts Markdown **Text** into into BBCode's [B] tag.
-  @content String The raw document. Each line is in Markdown.
-  @return String The raw document. Each line is in BBCode.
-*/
-App.methods.strong = function(content) {
-  return content.replace(/[\*]{2}([^\*{2}]+)[\*]{2}/gmi, '[B]$1[/B]');
 };
 
 /*
