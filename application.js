@@ -116,6 +116,44 @@ var Converter = function() {
 
     return content;
   };
+  
+  /*
+    Converts Markdown unordered lists into BBCode lists.
+    @lines Array<String> A list of lines. Each line is in Markdown.
+    @return Array<String> A list of lines. Each line is in BBCode.
+  */
+  self.unorderedList = function(lines) {
+    var template, i, matches;
+    template = _.template("[LIST]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
+    for (i = 0; i < lines.length; i++) {
+      /* Is this a list item ?*/
+      if (lines[i].match(/^- ([^\n]+)/)) {
+        matches = [lines[i].replace(/^- /, "")];
+        lines[i] = null;
+        for (i = (i + 1); i < lines.length; i++) {
+          if (lines[i].match(/^- ([^\n]+)/)) {
+            matches.push(lines[i].replace(/^\s*- /, ""));
+            lines[i] = null;
+          } else {
+            break;
+          }
+        };
+
+        /* 
+          This is the end of the list
+          Let's render it!
+        */
+        lines[i - 1] = template({
+          list: matches.reverse()
+        });
+      }
+    };
+
+    /* We've to remove all empty lines. */
+    return _.reject(lines, function(line) {
+      return line === null;
+    });
+  };
 };
 
 /*
@@ -151,43 +189,6 @@ App.methods.orderedList = function(lines) {
 
   /* We've to remove all empty lines. */
   return _.reject(lines, function(line) {
-    return line === null;
-  });
-};
-
-/*
-  Converts Markdown unordered lists into BBCode lists.
-  @lines Array<String> A list of lines. Each line is in Markdown.
-  @return Array<String> A list of lines. Each line is in BBCode.
-*/
-App.methods.unorderedList = function(random) {
-  var template = _.template("[LIST]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i].replace(/\n/, '') %><% }; %>\n[/LIST]");
-  for (var i = 0; i < random.length; i++) {
-    /* Is this a list item ?*/
-    if (random[i].match(/^- ([^\n]+)/)) {
-      var matches = [random[i].replace(/^- /, "")];
-      random[i] = null;
-      for (i = (i + 1); i < random.length; i++) {
-        if (random[i].match(/^- ([^\n]+)/)) {
-          matches.push(random[i].replace(/^\s*- /, ""));
-          random[i] = null;
-        } else {
-          break;
-        }
-      };
-
-      /* 
-        This is the end of the list
-        Let's render it!
-      */
-      random[i - 1] = template({
-        list: matches.reverse()
-      });
-    }
-  };
-
-  /* We've to remove all empty lines. */
-  return _.reject(random, function(line) {
     return line === null;
   });
 };

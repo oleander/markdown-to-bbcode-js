@@ -144,4 +144,21 @@ describe("Converter", function() {
       expect(converter.underscore("_Do NOT \nunderscore me_")).not.toMatch(/\[U\]/);
     });
   });
+  
+  describe("#unorderedList", function() {
+    it("should be able to convert a markdown list to a BBCode list", function() {
+      var lines = ["- Item 1", "- Item 2"];
+      expect(converter.unorderedList(lines).join("\n")).toEqual("[LIST]\n[*]Item 1\n[*]Item 2\n[/LIST]");
+    });
+    
+    it("should treat a new line as a new list", function() {
+      var list = ["- List 1", "", "- List 2"]
+      expect(converter.unorderedList(list).join("\n")).toEqual("[LIST]\n[*]List 1\n[/LIST]\n\n[LIST]\n[*]List 2\n[/LIST]");
+    });
+    
+    it("should not touch ordered lists", function() {
+      var list = ["1. Item", "2. Item"]
+      expect(converter.unorderedList(list)).toEqual(list);
+    });
+  });
 });
