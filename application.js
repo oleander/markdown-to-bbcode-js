@@ -69,7 +69,7 @@ var Converter = function() {
     });
 
     /* [    ]My code block => [CODE]My code block[/CODE] */
-    content = content.replace(/\n[ ]{4,}([^\n]+)\n?/g, function(content, code) {
+    content = content.replace(/[ ]{4,}([^\n]+)/g, function(content, code) {
       return template({
         type: "CODE",
         content: code

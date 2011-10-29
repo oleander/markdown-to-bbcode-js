@@ -39,11 +39,11 @@ describe("Converter", function() {
     });
 
     it("converters markdown 4 space indent to a BBCode tag, start with a new line", function() {
-      expect(converter.code("\n    This is code!")).toEqual('[CODE]This is code![/CODE]');
+      expect(converter.code("\n    This is code!")).toEqual('\n[CODE]This is code![/CODE]');
     });
 
     it("converters markdown 4 space indent to a BBCode tag, start and end with a new line", function() {
-      expect(converter.code("\n    This is code!\n")).toEqual('[CODE]This is code![/CODE]');
+      expect(converter.code("\n    This is code!\n")).toEqual('\n[CODE]This is code![/CODE]\n');
     });
   });
 
