@@ -152,12 +152,12 @@ describe("Converter", function() {
     });
 
     it("should treat a new line as a new list", function() {
-      var list = ["- List 1", "", "- List 2"]
+      var list = ["- List 1", "", "- List 2"];
       expect(converter.unorderedList(list).join("\n")).toEqual("[LIST]\n[*]List 1\n[/LIST]\n\n[LIST]\n[*]List 2\n[/LIST]");
     });
 
     it("should not touch ordered lists", function() {
-      var list = ["1. Item", "2. Item"]
+      var list = ["1. Item", "2. Item"];
       expect(converter.unorderedList(list)).toEqual(list);
     });
   });
@@ -169,7 +169,7 @@ describe("Converter", function() {
     });
 
     it("should treat a new line as a new list", function() {
-      var list = ["1. List 1", "", "2. List 2"]
+      var list = ["1. List 1", "", "2. List 2"];
       expect(converter.orderedList(list).join("\n")).toEqual("[LIST=1]\n[*]List 1\n[/LIST]\n\n[LIST=1]\n[*]List 2\n[/LIST]");
     });
 
