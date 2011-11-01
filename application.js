@@ -95,22 +95,32 @@ var Converter = function() {
     return content.replace(/[\*]{2}([^\*{2}]+)[\*]{2}/mg, '[B]$1[/B]');
   };
 
+  /*
+    @document String A markdown document to process
+    @return String A BBCode document.
+  */
   self.process = function(document) {
-    zz = document
     var i, split, con = true,
-    run = 1;
-    var split = document.split(/\n/);
+    run = true,
+    re;
+
+    /* Line breaks should be equal on all plattforms */
+    document = document.replace(/\r\n/, "\n");
+
+    /* Converting all code related markdown blocks to bbcode code blocks */
+    document = self.code(document);
+
+    split = document.split(/\n/);
     for (i = 0; i < split.length; i++) {
-      if (((document.match(/[`]{3}/g) || []).length > 1 || (document.match(/\[[A-Z]+\][\s.]+\[\/[A-Z]+\]/g) || []).length > 1) && (split[i].match(/[`]{3}\n?$/) || split[i].match(/^\[[A-Z]+\]\n?$/))) {
+      if ((document.match(/\[\/?[A-Z]+\]/g) || []).length > 1 && split[i].match(/^\[[A-Z]+\]\n?$/)) {
         for (i = i + 1; con; i++) {
-          if (!split[i] || split[i].match(/[`]{3}\n?$/) || split[i].match(/^\[[A-Z]+\]\n?$/)) {
+          if (!split[i] || split[i].match(/^\[\/[A-Z]+\]\n?$/)) {
             con = false;
           }
         };
       } else {
         if (run) {
-          var methods = ["url", "italic", "underscore", "strong"];
-          _.each(methods, function(method) {
+          _.each(["url", "italic", "underscore", "strong"], function(method) {
             split[i] = self[method](split[i]);
           });
         } else {
@@ -122,7 +132,7 @@ var Converter = function() {
               found: true
             }
             */
-            var re = self[method](split, i);
+            re = self[method](split, i);
             if (re.found) {
               for (i = i; i < re.to; i++) {
                 split[i] = null;
@@ -135,18 +145,16 @@ var Converter = function() {
       }
 
       /* Is this the end? */
-      if ((i + 1) == split.length && run == 1) {
+      if ((i + 1) == split.length && run) {
         i = -1;
         run = false;
         con = true;
       }
     };
 
-    split = _.reject(split, function(line) {
+    return _.reject(split, function(line) {
       return line === null;
-    });
-
-    return self.code(split.join("\n"));
+    }).join("\n");
   };
 
   /*
@@ -268,36 +276,6 @@ var Converter = function() {
         };
       }
     };
-  };
-
-  /*
-    @data String The document to be converted later on
-    @return A Converter object
-  */
-  self.raw = function(data) {
-    self.data = data;
-    return self;
-  };
-
-  /*
-    @return A BBCode version of the @data var
-  */
-  self.toBBCode = function() {
-    content = self.data.replace(/\r/g, "\n");
-    content = "\n\n" + content + "\n\n";
-
-    /* String specific methods */
-    _.each(["url", "italic", "underscore", "code"], function(method) {
-      content = self[method](content);
-    });
-
-    /* Line specific methods */
-    var lines = content.split(/\n/);
-    _.each(["unorderedList", "orderedList", "strong"], function(method) {
-      lines = self[method](lines);
-    });
-
-    return lines.join("\n").replace(/^\n\n/, "").replace(/\n\n$/, "");
   };
 };
 
