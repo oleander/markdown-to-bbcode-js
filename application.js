@@ -170,20 +170,72 @@ var Converter = function() {
     content);
   };
 
-  
-  // options {
-  //   template: "a template",
-  //   n: 1,
-  //   lines: [a line],
-  //   match: /regexp/,
-  //   remove: /regexp/
-  // }
+  /*
+    Converts Markdown unordered lists into BBCode lists.
+    @lines Array<String> A list of lines. Each line is in Markdown.
+    @n Integer On what position should we start looking for a markdown list?
+    @return Hash Take a look at the #renderList method for more information.
+  */
+  self.unorderedList = function(lines, n) {
+    var template = _.template("[LIST]<% for (var i = 0, length = list.length; i < length; i++){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
+    return self.renderList({
+      template: template,
+      lines: lines,
+      n: n,
+      match: /^- ([^\n]+)/,
+      remove: /^\s*- /
+    });
+  };
+
+  /*
+    Converts Markdown ordered lists into BBCode lists.
+    @lines Array<String> A list of lines. Each line is in Markdown.
+    @n Integer On what position should we start looking for a markdown list?
+    @return Hash Take a look at the #renderList method for more information.
+  */
+  self.orderedList = function(lines, n) {
+    var template = _.template("[LIST=1]<% for (var i = 0, length = list.length; i < length; i++){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
+    return self.renderList({
+      template: template,
+      lines: lines,
+      n: n,
+      match: /^\d+\. ([^\n]+)/,
+      remove: /^\d+\. /
+    });
+  };
+
+  /*
+  @options Hash A hash of options used for rendering a markdown list
+  Example list:
+    options {
+      template: "a template",
+      n: 1,
+      lines: [a line],
+      match: /regexp/,
+      remove: /regexp/
+    }
+    
+    @template A underscore.js template
+    @n Where #renderList should start look for a list
+    @lines A list of lines for the entire document
+    @match How do we know what a list item looks like?
+    @remove What should be striped out before we can call it a list item?
+  @return Hash 
+    return {
+      found: true,
+      data: data,
+      to: i
+    };
+    @found Did we find a list?
+    @data How does the new, BBCode list looks like?
+    @to On what line does the list end?
+  */
   self.renderList = function(options) {
     var template, i, matches, lines;
-    
+
     template = options.template;
     lines = options.lines;
-    
+
     for (i = options.n; i < lines.length; i++) {
       /* Is this a list item ?*/
       if (lines[i].match(options.match)) {
@@ -216,38 +268,6 @@ var Converter = function() {
         };
       }
     };
-  };
-  
-  /*
-    Converts Markdown unordered lists into BBCode lists.
-    @lines Array<String> A list of lines. Each line is in Markdown.
-    @return Array<String> A list of lines. Each line is in BBCode.
-  */
-  self.unorderedList = function(lines, n) {
-    var  template = _.template("[LIST]<% for (var i = 0, length = list.length; i < length; i++){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
-    return self.renderList({
-      template: template,
-      lines: lines,
-      n: n,
-      match: /^- ([^\n]+)/,
-      remove: /^\s*- /
-    });
-  };
-
-  /*
-    Converts Markdown ordered lists into BBCode lists.
-    @lines Array<String> A list of lines. Each line is in Markdown.
-    @return Array<String> A list of lines. Each line is in BBCode.
-  */
-  self.orderedList = function(lines, n) {
-    var template = _.template("[LIST=1]<% for (var i = 0, length = list.length; i < length; i++){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
-    return self.renderList({
-      template: template,
-      lines: lines,
-      n: n,
-      match: /^\d+\. ([^\n]+)/,
-      remove: /^\d+\. /
-    });
   };
 
   /*
