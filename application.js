@@ -78,7 +78,6 @@ var Converter = function() {
 
     /* `My code block` => [CODE]My code block[/CODE] */
     return content.replace(/`([^`\n]+.?)`/g, function(content, code) {
-      console.debug("CODE", code);
       return template({
         type: "CODE",
         content: code
@@ -115,7 +114,7 @@ var Converter = function() {
             split[i] = self[method](split[i]);
           });
         } else {
-          _.each(["unorderedList"], function(method) {
+          _.each(["unorderedList", "orderedList"], function(method) {
             /*
             re = {
               to: 5,
@@ -171,21 +170,25 @@ var Converter = function() {
     content);
   };
 
-  /*
-    Converts Markdown unordered lists into BBCode lists.
-    @lines Array<String> A list of lines. Each line is in Markdown.
-    @return Array<String> A list of lines. Each line is in BBCode.
-  */
-  self.unorderedList = function(lines, n) {
+  
+  // options {
+  //   template: "a template",
+  //   n: 1,
+  //   lines: [a line],
+  //   match: /regexp/,
+  //   remove: /regexp/
+  // }
+  self.renderList = function(options) {
     var template, i, matches;
-    template = _.template("[LIST]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
-    for (i = n; i < lines.length; i++) {
+    template = options.template;
+    var lines = options.lines;
+    for (i = options.n; i < lines.length; i++) {
       /* Is this a list item ?*/
-      if (lines[i].match(/^- ([^\n]+)/)) {
-        matches = [lines[i].replace(/^- /, "")];
+      if (lines[i].match(options.match)) {
+        matches = [lines[i].replace(options.remove, "")];
         for (i = (i + 1); i < lines.length; i++) {
-          if (lines[i].match(/^- ([^\n]+)/)) {
-            matches.push(lines[i].replace(/^\s*- /, ""));
+          if (lines[i].match(options.match)) {
+            matches.push(lines[i].replace(options.remove, ""));
           } else {
             break;
           }
@@ -212,42 +215,36 @@ var Converter = function() {
       }
     };
   };
+  
+  /*
+    Converts Markdown unordered lists into BBCode lists.
+    @lines Array<String> A list of lines. Each line is in Markdown.
+    @return Array<String> A list of lines. Each line is in BBCode.
+  */
+  self.unorderedList = function(lines, n) {
+    var  template = _.template("[LIST]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
+    return self.renderList({
+      template: template,
+      lines: lines,
+      n: n,
+      match: /^- ([^\n]+)/,
+      remove: /^\s*- /
+    });
+  };
 
   /*
     Converts Markdown ordered lists into BBCode lists.
     @lines Array<String> A list of lines. Each line is in Markdown.
     @return Array<String> A list of lines. Each line is in BBCode.
   */
-  self.orderedList = function(lines) {
-    var template, matches, i;
-    template = _.template("[LIST=1]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
-    for (i = 0; i < lines.length; i++) {
-      /* Is this a list item ?*/
-      if (lines[i].match(/^\d+\. ([^\n]+)/)) {
-        matches = [lines[i].replace(/^\d+\. ([^\n]+)/, "$1")];
-        lines[i] = null;
-        for (i = (i + 1); i < lines.length; i++) {
-          if (lines[i].match(/^\d+\. ([^\n]+)/)) {
-            matches.push(lines[i].replace(/^\d+\. /, ""));
-            lines[i] = null;
-          } else {
-            break;
-          }
-        };
-
-        /* 
-          This is the end of the list
-          Let's render it!
-        */
-        lines[i - 1] = template({
-          list: matches.reverse()
-        });
-      }
-    };
-
-    /* We've to remove all empty lines. */
-    return _.reject(lines, function(line) {
-      return line === null;
+  self.orderedList = function(lines, n) {
+    var template = _.template("[LIST=1]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
+    return self.renderList({
+      template: template,
+      lines: lines,
+      n: n,
+      match: /^\d+\. ([^\n]+)/,
+      remove: /^\d+\. /
     });
   };
 
