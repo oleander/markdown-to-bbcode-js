@@ -96,44 +96,56 @@ var Converter = function() {
   };
 
   self.process = function(document) {
-    var i, split, con = true;
+    var i, split, con = true,
+    run = 1;
     var split = document.split(/\n/);
     for (i = 0; i < split.length; i++) {
       if (split[i].match(/^[`]{1,4}/) || split[i].match(/^\[[A-Z]+\]$/)) {
         for (i = i + 1; con; i++) {
-          if (split[i].match(/[`]{1,4}$/) || split[i].match(/^\[\/[A-Z]\]$/)) {
+          if (!split[i] || split[i].match(/[`]{1,4}\n?$/) || split[i].match(/^\[\/[A-Z]\]\n?$/)) {
             con = false;
           }
         };
       } else {
-        _.each(["url", "italic", "underscore", "strong"], function(method) {
-          split[i] = self[method](split[i]);
-        });
-        
-        _.each(["unorderedList"], function(method) {
-          /*
-          re = {
-            to: 5,
-            data: "template-data",
-            found: true
-          }
-          */
-          var re = self[method](split, i);
-          if(re.found){
-            for (i; i < re.to; i++) {
-              split[i] = null
-            };
-            
-            split[i] = re.data;
-          }
-        });
+        if (run) {
+          var methods = ["url", "italic", "underscore", "strong"];
+          _.each(methods, function(method) {
+            split[i] = self[method](split[i]);
+          });
+        } else {
+          console.debug("I", i);
+          _.each(["unorderedList"], function(method) {
+            /*
+            re = {
+              to: 5,
+              data: "template-data",
+              found: true
+            }
+            */
+            var re = self[method](split, i);
+            if (re.found) {
+              for (i = i - 1; i < re.to; i++) {
+                split[i] = null;
+              };
+
+              split[i] = re.data;
+            }
+          });
+        }
+      }
+
+      /* Is this the end? */
+      if ((i + 1) == split.length && run == 1) {
+        i = -1;
+        run = false;
+        con = true;
       }
     };
-    
+
     split = _.reject(split, function(line) {
       return line === null;
     });
-    
+
     return self.code(split.join("\n"));
   };
 
@@ -185,13 +197,13 @@ var Converter = function() {
         data = template({
           list: matches.reverse()
         });
-        
+
         return {
           found: true,
           data: data,
           to: (i - 1)
         };
-        
+
       } else {
         return {
           found: false
