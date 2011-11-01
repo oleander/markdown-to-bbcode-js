@@ -179,9 +179,11 @@ var Converter = function() {
   //   remove: /regexp/
   // }
   self.renderList = function(options) {
-    var template, i, matches;
+    var template, i, matches, lines;
+    
     template = options.template;
-    var lines = options.lines;
+    lines = options.lines;
+    
     for (i = options.n; i < lines.length; i++) {
       /* Is this a list item ?*/
       if (lines[i].match(options.match)) {
@@ -199,7 +201,7 @@ var Converter = function() {
           Let's render it!
         */
         data = template({
-          list: matches.reverse()
+          list: matches
         });
 
         return {
@@ -222,7 +224,7 @@ var Converter = function() {
     @return Array<String> A list of lines. Each line is in BBCode.
   */
   self.unorderedList = function(lines, n) {
-    var  template = _.template("[LIST]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
+    var  template = _.template("[LIST]<% for (var i = 0, length = list.length; i < length; i++){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
     return self.renderList({
       template: template,
       lines: lines,
@@ -238,7 +240,7 @@ var Converter = function() {
     @return Array<String> A list of lines. Each line is in BBCode.
   */
   self.orderedList = function(lines, n) {
-    var template = _.template("[LIST=1]<% for (var i = list.length - 1; i >= 0; i--){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
+    var template = _.template("[LIST=1]<% for (var i = 0, length = list.length; i < length; i++){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
     return self.renderList({
       template: template,
       lines: lines,
