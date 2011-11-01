@@ -69,7 +69,7 @@ var Converter = function() {
     });
 
     /* [    ]My code block => [CODE]My code block[/CODE] */
-    content = content.replace(/[ ]{4,}([^\n]+)/gm, function(content, code) {
+    content = content.replace(/[ ]{4}([^\n]+)/gm, function(content, code) {
       return template({
         type: "CODE",
         content: code
@@ -77,7 +77,8 @@ var Converter = function() {
     });
 
     /* `My code block` => [CODE]My code block[/CODE] */
-    return content.replace(/`([^`]+)`/gm, function(content, code) {
+    return content.replace(/`([^`\n]+.?)`/g, function(content, code) {
+      console.debug("CODE", code);
       return template({
         type: "CODE",
         content: code
@@ -96,13 +97,14 @@ var Converter = function() {
   };
 
   self.process = function(document) {
+    zz = document
     var i, split, con = true,
     run = 1;
     var split = document.split(/\n/);
     for (i = 0; i < split.length; i++) {
-      if (split[i].match(/^[`]{1,4}/) || split[i].match(/^\[[A-Z]+\]$/)) {
+      if (((document.match(/[`]{3}/g) || []).length > 1 || (document.match(/\[[A-Z]+\][\s.]+\[\/[A-Z]+\]/g) || []).length > 1) && (split[i].match(/[`]{3}\n?$/) || split[i].match(/^\[[A-Z]+\]\n?$/))) {
         for (i = i + 1; con; i++) {
-          if (!split[i] || split[i].match(/[`]{1,4}\n?$/) || split[i].match(/^\[\/[A-Z]\]\n?$/)) {
+          if (!split[i] || split[i].match(/[`]{3}\n?$/) || split[i].match(/^\[[A-Z]+\]\n?$/)) {
             con = false;
           }
         };
@@ -113,7 +115,6 @@ var Converter = function() {
             split[i] = self[method](split[i]);
           });
         } else {
-          console.debug("I", i);
           _.each(["unorderedList"], function(method) {
             /*
             re = {
@@ -124,7 +125,7 @@ var Converter = function() {
             */
             var re = self[method](split, i);
             if (re.found) {
-              for (i = i - 1; i < re.to; i++) {
+              for (i = i; i < re.to; i++) {
                 split[i] = null;
               };
 
