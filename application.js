@@ -111,7 +111,7 @@ var Converter = function() {
 
     split = document.split(/\n/);
     for (i = 0, length = split.length; i < length; i++) {
-      if ((document.match(/\[\/?[A-Z]+\]/g) || []).length > 1 && split[i].match(/^\[[A-Z]+\]\n?$/)) {
+      if ((document.match(/\[\/?[A-Z]+\]/g) || []).length > 1 && split[i].match(/\[[A-Z]+\]/)) {
         for (i = i + 1; con; i++) {
           if (!split[i] || split[i].match(/^\[\/[A-Z]+\]\n?$/)) {
             con = false;
