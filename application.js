@@ -101,8 +101,7 @@ var Converter = function() {
   */
   self.process = function(document) {
     var i, split, con = true,
-    run = true,
-    re;
+    re, methods = ["url", "italic", "underscore", "strong"];
 
     /* Line breaks should be equal on all plattforms */
     document = document.replace(/\r\n/, "\n");
@@ -119,36 +118,29 @@ var Converter = function() {
           }
         };
       } else {
-        if (run) {
-          _.each(["url", "italic", "underscore", "strong"], function(method) {
-            split[i] = self[method](split[i]);
-          });
-        } else {
-          _.each(["unorderedList", "orderedList"], function(method) {
-            /*
+        _.each(methods, function(method) {
+          split[i] = self[method](split[i]);
+        });
+        _.each(["unorderedList", "orderedList"], function(method) {
+          /*
             re = {
               to: 5,
               data: "template-data",
               found: true
             }
             */
-            re = self[method](split, i);
-            if (re.found) {
-              for (i = i; i < re.to; i++) {
-                split[i] = null;
-              };
+          re = self[method](split, i);
+          if (re.found) {
+            for (i = i; i < re.to; i++) {
+              split[i] = null;
+            };
 
-              split[i] = re.data;
-            }
-          });
-        }
-      }
-
-      /* Is this the end? */
-      if ((i + 1) == split.length && run) {
-        i = -1;
-        run = false;
-        con = true;
+            split[i] = re.data;
+            _.each(methods, function(method) {
+              split[i] = self[method](split[i]);
+            });
+          }
+        });
       }
     };
 
