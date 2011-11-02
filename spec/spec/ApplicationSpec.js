@@ -21,6 +21,14 @@ describe("Markdown", function() {
     it("ignores new lines", function() {
       expect(converter.quote("> This is a quote!\nNew line")).toEqual('[QUOTE]\nThis is a quote!\n[/QUOTE]\nNew line');
     });
+    
+    it("It should handle an author - 1", function() {
+      expect(converter.quote("John Doe> This is a quote!")).toEqual('[QUOTE="John Doe"]\nThis is a quote!\n[/QUOTE]');
+    });
+    
+    it("It should handle an author - 2", function() {
+      expect(converter.quote("John Doe > This is a quote!")).toEqual('[QUOTE="John Doe"]\nThis is a quote!\n[/QUOTE]');
+    });
   });
   
   describe("#code", function() {
