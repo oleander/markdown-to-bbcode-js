@@ -1,6 +1,6 @@
-describe("MarkdownToBBCode", function() {
+describe("Markdown", function() {
   beforeEach(function() {
-    converter = new MarkdownToBBCode();
+    converter = new Markdown();
   });
 
   describe("#url", function() {
@@ -13,6 +13,16 @@ describe("MarkdownToBBCode", function() {
     });
   });
 
+  describe("#quote", function() {
+    it("converter markdown quotes > to a BBCode tag", function() {
+      expect(converter.quote("> This is a quote!")).toEqual('[QUOTE]\nThis is a quote!\n[/QUOTE]');
+    });
+    
+    it("ignores new lines", function() {
+      expect(converter.quote("> This is a quote!\nNew line")).toEqual('[QUOTE]\nThis is a quote!\n[/QUOTE]\nNew line');
+    });
+  });
+  
   describe("#code", function() {
     it("converters markdown code `Code` to a BBCode tag", function() {
       expect(converter.code("`Code!`")).toEqual('[CODE]\nCode!\n[/CODE]');
