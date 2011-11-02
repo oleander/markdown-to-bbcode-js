@@ -100,7 +100,7 @@ var Converter = function() {
     @return String A BBCode document.
   */
   self.process = function(document) {
-    var i, split, con = true,
+    var i, split, length, con = true, to,
     re, methods = ["url", "italic", "underscore", "strong"];
 
     /* Line breaks should be equal on all plattforms */
@@ -110,7 +110,7 @@ var Converter = function() {
     document = self.code(document);
 
     split = document.split(/\n/);
-    for (i = 0; i < split.length; i++) {
+    for (i = 0, length = split.length; i < length; i++) {
       if ((document.match(/\[\/?[A-Z]+\]/g) || []).length > 1 && split[i].match(/^\[[A-Z]+\]\n?$/)) {
         for (i = i + 1; con; i++) {
           if (!split[i] || split[i].match(/^\[\/[A-Z]+\]\n?$/)) {
@@ -131,7 +131,7 @@ var Converter = function() {
           */
           re = self[method](split, i);
           if (re.found) {
-            for (i = i; i < re.to; i++) {
+            for (i = i, to = re.to; i < to; i++) {
               split[i] = null;
             };
 
@@ -231,16 +231,16 @@ var Converter = function() {
     @to On what line does the list end?
   */
   self.renderList = function(options) {
-    var template, i, matches, lines;
+    var template, i, matches, lines, length;
 
     template = options.template;
     lines = options.lines;
 
-    for (i = options.n; i < lines.length; i++) {
+    for (i = options.n, length = lines.length; i < length; i++) {
       /* Is this a list item ?*/
       if (lines[i].match(options.match)) {
         matches = [lines[i].replace(options.remove, "")];
-        for (i = (i + 1); i < lines.length; i++) {
+        for (i = (i + 1); i < length; i++) {
           if (lines[i].match(options.match)) {
             matches.push(lines[i].replace(options.remove, ""));
           } else {
