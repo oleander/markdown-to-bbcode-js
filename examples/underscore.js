@@ -1,1 +1,1 @@
-lib/underscore.js
+lib/dependencies/underscore.js
