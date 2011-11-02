@@ -5,7 +5,7 @@
   <title>Jasmine Test Runner</title>
   <script type="text/javascript" charset="utf-8" src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
   <script type="text/javascript" charset="utf-8" src="underscore.js"></script>
-  <script type="text/javascript" src="application.js"></script>
+  <script type="text/javascript" src="markdown.js"></script>
   <style type="text/css" media="screen">
     #from {
       position: absolute;
@@ -27,46 +27,27 @@
       padding: 15px;
     }
   </style>
+  <script type="text/javascript" charset="utf-8">
+    $(function() {
+      $.get("/example.md", function(data) {
+        var to = $("#to");
+        var from = $("#from");
+        var converter = new Markdown();
+        from.val(data);
+        from.bind("change", function() {
+          to.html(converter.process(from.val()));
+        });
+
+        from.trigger("change");
+
+        $(document).keyup(function() {
+          from.trigger("change");
+        });
+      })
+    });
+  </script>
 </head>
 <body>
-  <div id="container" style="display:none;">- ABC
-- [My URL](http://example.com)
-- GHI
-
-*Random*
-**Strong!**
-_OK_
-
-__WORK?__
-_Uneven__
-[This is a url](http://google.com)
-
-- JKL
-- MNO
-
-`Code!`
-
-```
-General code
-```
-
-``` html
-HTML code
-```
-
-``` php
-PHP code
-```
-    Antoher one!
-
-1. Item 1
-2. Item 2
-
-This is a line break
-
-- PQR
-- STU
-    This is code!</div>
   <textarea id="from"></textarea>
   <textarea id="to"></textarea>
 </body>

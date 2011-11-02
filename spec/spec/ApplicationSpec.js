@@ -1,6 +1,6 @@
-describe("Converter", function() {
+describe("MarkdownToBBCode", function() {
   beforeEach(function() {
-    converter = new Converter();
+    converter = new MarkdownToBBCode();
   });
 
   describe("#url", function() {
