@@ -7,9 +7,18 @@ describe("Markdown", function() {
     it("converters markdown url to bbcode url", function() {
       expect(converter.url("[Data](A)")).toEqual('[URL="A"]Data[/URL]');
     });
-
+    
     it("converters markdown urls to bbcode urls", function() {
       expect(converter.url("[Data1](A)[Data2](B)")).toEqual('[URL="A"]Data1[/URL][URL="B"]Data2[/URL]');
+    });
+    
+    it("converters markdown urls to bbcode urls - and respects spaces", function() {
+      expect(converter.url("[Data1](A) [Data2](B)")).toEqual('[URL="A"]Data1[/URL] [URL="B"]Data2[/URL]');
+    });
+    
+    it("should ignore images", function() {
+      var image = "![My image](http://a.com/image.png)";
+      expect(converter.url(image)).toEqual(image);
     });
   });
 
@@ -22,12 +31,18 @@ describe("Markdown", function() {
       expect(converter.quote("> This is a quote!\nNew line")).toEqual('[QUOTE]\nThis is a quote!\n[/QUOTE]\nNew line');
     });
     
-    it("It should handle an author - 1", function() {
+    it("it should handle an author - 1", function() {
       expect(converter.quote("John Doe> This is a quote!")).toEqual('[QUOTE="John Doe"]\nThis is a quote!\n[/QUOTE]');
     });
     
-    it("It should handle an author - 2", function() {
+    it("it should handle an author - 2", function() {
       expect(converter.quote("John Doe > This is a quote!")).toEqual('[QUOTE="John Doe"]\nThis is a quote!\n[/QUOTE]');
+    });
+  });
+  
+  describe("#image", function() {
+    it("converter markdown image to a BBCode image", function() {
+      expect(converter.image("![My image](http://a.com/image.png)")).toEqual('[IMG alt="My image"]http://a.com/image.png[/IMG]');
     });
   });
   
