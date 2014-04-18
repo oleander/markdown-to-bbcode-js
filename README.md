@@ -1,7 +1,7 @@
 # Markdown to bbcode
 
-Experimental javascript library for converting [BBCode](http://sv.wikipedia.org/wiki/BBCode) 
-to Markdown.
+Experimental javascript library for converting Markdown 
+to [BBCode](http://sv.wikipedia.org/wiki/BBCode).
 
 ## Try it out @ Heroku
 
