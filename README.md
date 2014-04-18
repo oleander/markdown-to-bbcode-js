@@ -1,4 +1,4 @@
-# Markdown to bbcode
+# Markdown to BBCode
 
 Experimental javascript library for converting Markdown 
 to [BBCode](http://sv.wikipedia.org/wiki/BBCode).
