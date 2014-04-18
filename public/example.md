@@ -25,7 +25,7 @@ HTML code
 ``` php
 PHP code
 ```
-  Antoher one!
+    Another one!
 
 1. Item 1
 2. Item 2
@@ -34,4 +34,4 @@ This is a line break
 
 - PQR
 - STU
-  This is code!
+    This is code!
