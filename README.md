@@ -1,6 +1,6 @@
 # Markdown to bbcode
 
-Experimental javascript library for coverting [BBCode](http://sv.wikipedia.org/wiki/BBCode) 
+Experimental javascript library for converting [BBCode](http://sv.wikipedia.org/wiki/BBCode) 
 to Markdown.
 
 ## Try it out @ Heroku
