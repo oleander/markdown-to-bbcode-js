@@ -5,7 +5,7 @@ def static(file)
 end
 
 get "/?" do
- send_file "index.html"
+  send_file "index.html"
 end
 
 get %r{/(.+)} do
