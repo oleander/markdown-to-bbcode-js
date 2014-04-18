@@ -5,7 +5,7 @@ to Markdown.
 
 ## Try it out @ Heroku
 
-[markdown-to-bbcode.herokuapp.com/](http://markdown-to-bbcode.herokuapp.com/) 
+[markdown-to-bbcode.herokuapp.com](http://markdown-to-bbcode.herokuapp.com/) 
 or poke around in the `public/js` folder.
 
 ## Code
