@@ -8,6 +8,10 @@ to Markdown.
 [markdown-to-bbcode.herokuapp.com/](http://markdown-to-bbcode.herokuapp.com/) 
 or poke around in the `public/js` folder.
 
+## Code
+
+The library is defined in the `public/js/markdown.js` file.
+
 ## Specs
 
 Take a look at `spec` folder or open the `spec/SpecRunner.html` in your browser.
