@@ -1,16 +1,16 @@
 # Markdown to bbcode
 
 Experimental javascript library for coverting [BBCode](http://sv.wikipedia.org/wiki/BBCode) 
-to markdown.
+to Markdown.
 
 ## Try it out @ Heroku
 
 [markdown-to-bbcode.herokuapp.com/](http://markdown-to-bbcode.herokuapp.com/) 
-or poke around in the `examples` folder.
+or poke around in the `public/js` folder.
 
 ## Specs
 
-Take a look at `spec` folder for specs.
+Take a look at `spec` folder or open the `spec/SpecRunner.html` in your browser.
 
 ## Contributing
 
