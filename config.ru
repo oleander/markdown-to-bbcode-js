@@ -1,2 +1,2 @@
-require "./server"
-run Sinatra::Application
+require "vienna"
+run Vienna
