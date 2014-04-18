@@ -12,6 +12,11 @@ or poke around in the `public/js` folder.
 
 Take a look at `spec` folder or open the `spec/SpecRunner.html` in your browser.
 
+## Note
+
+This project was build back in 2011 but weren't published until 2014.
+The existing code *might* therefore relay on legacy code.
+
 ## Contributing
 
 1. Fork it ( http://github.com/oleander/markdown-to-bbcode-js/fork )
