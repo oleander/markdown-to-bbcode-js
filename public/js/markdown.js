@@ -188,7 +188,7 @@ var Markdown = function() {
 
         };
       } else {
-        _.each(["unorderedList", "orderedList", "codeIndent"], function(method) {
+        _.each(["unorderedList", "orderedList", "codeIndent", "quoteBlock"], function(method) {
           /*
             re = {
               to: 5,
@@ -225,6 +225,23 @@ var Markdown = function() {
     }).join("\n");
   };
 
+
+  /*
+    Converts Markdown multi-line quotes into single BBCode quote block
+    @lines Array<String> A list of lines. Each line is in Markdown.
+    @n Integer On what position should we start looking for a markdown quotes?
+    @return Hash Take a look at the #renderBlock method for more information.
+  */
+  self.quoteBlock = function(lines, n) {
+    var template = _.template("[QUOTE]<% for (var i = 0, length = list.length; i < length; i++){ %>\n<%= list[i] %><% }; %>\n[/QUOTE]");
+    return self.renderBlock({
+      template: template,
+      lines: lines,
+      n: n,
+      match: /^>\s*([^\n]+)/,
+      remove: /^>\s*/
+    });
+  };
 
   /*
     Converts Markdown multiple indented lines into single BBCode code block
