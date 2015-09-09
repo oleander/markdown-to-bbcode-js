@@ -155,14 +155,6 @@ var Markdown = function() {
       });
     });
 
-    /* [    ]My code block => [CODE]My code block[/CODE] */
-    content = content.replace(/[ ]{4}([^\n]+)/gm, function(content, code) {
-      return template({
-        type: "CODE",
-        content: code
-      });
-    });
-
     /* `My code block` => [CODE]My code block[/CODE] */
     return content.replace(/`([^`\n]+.?)`/g, function(content, code) {
       return template({
@@ -196,11 +188,7 @@ var Markdown = function() {
 
         };
       } else {
-        _.each(self.options.methods, function(method) {
-          split[i] = self[method](split[i]);
-        });
-
-        _.each(["unorderedList", "orderedList"], function(method) {
+        _.each(["unorderedList", "orderedList", "codeIndent"], function(method) {
           /*
             re = {
               to: 5,
@@ -215,17 +203,44 @@ var Markdown = function() {
             };
 
             split[i] = re.data;
-            _.each(self.options.methods, function(method) {
-              split[i] = self[method](split[i]);
-            });
+			if (method !== "codeIndent") {
+				_.each(self.options.methods, function(method) {
+				  split[i] = self[method](split[i]);
+				});
+			}
           }
         });
+
+		if (!split[i].match(/\n/)) {
+			_.each(self.options.methods, function(method) {
+			  split[i] = self[method](split[i]);
+			});
+		}
+
       }
     };
 
     return _.reject(split, function(line) {
       return line === null;
     }).join("\n");
+  };
+
+
+  /*
+    Converts Markdown multiple indented lines into single BBCode code block
+    @lines Array<String> A list of lines. Each line is in Markdown.
+    @n Integer On what position should we start looking for a markdown indented lines?
+    @return Hash Take a look at the #renderBlock method for more information.
+  */
+  self.codeIndent = function(lines, n) {
+    var template = _.template("[CODE]<% for (var i = 0, length = list.length; i < length; i++){ %>\n<%= list[i] %><% }; %>\n[/CODE]");
+    return self.renderBlock({
+      template: template,
+      lines: lines,
+      n: n,
+      match: /[ ]{4}([^\n]+)/,
+      remove: /^\s*/
+    });
   };
 
   /*

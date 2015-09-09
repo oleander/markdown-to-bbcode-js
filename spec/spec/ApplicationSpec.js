@@ -71,12 +71,14 @@ describe("Markdown", function() {
       expect(converter.code("``` random\nCode!\n```")).toEqual('[CODE]\nCode!\n[/CODE]');
     });
 
-    it("converters markdown 4 space indent to a BBCode tag, start with a new line", function() {
-      expect(converter.code("\n    This is code!")).toEqual('\n[CODE]\nThis is code!\n[/CODE]');
+    it("converters markdown 4 space indent to a BBCode tag", function() {
+      var list = ["    This is code!"]
+      expect(converter.codeIndent(list, 0).data).toEqual('[CODE]\nThis is code!\n[/CODE]');
     });
 
-    it("converters markdown 4 space indent to a BBCode tag, start and end with a new line", function() {
-      expect(converter.code("\n    This is code!\n")).toEqual('\n[CODE]\nThis is code!\n[/CODE]\n');
+    it("converters markdown 4 space indent to a BBCode tag, check multiple consecutive lines", function() {
+      var list = ["    This is code!", "    Line 2"]
+      expect(converter.codeIndent(list, 0).data).toEqual('[CODE]\nThis is code!\nLine 2\n[/CODE]');
     });
   });
 
