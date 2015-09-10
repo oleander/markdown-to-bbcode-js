@@ -121,7 +121,7 @@ var Markdown = function() {
   self.code = function(content) {
     var regexp, template, getType;
 
-    regexp = /```\s*(([^\n]+))?\n([^```]+)```/gm;
+    regexp = /```[ \f\t\v\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]*(([^\n]+))?\n([\s\S]+?(?=\n```))\n```/gm;
     template = _.template("[<%= type %>]\n<%= content %>\n[/<%= type %>]");
 
     getType = function(match) {
