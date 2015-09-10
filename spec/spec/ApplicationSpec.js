@@ -38,6 +38,11 @@ describe("Markdown", function() {
     it("it should handle an author - 2", function() {
       expect(converter.quote("John Doe > This is a quote!")).toEqual('[QUOTE="John Doe"]\nThis is a quote!\n[/QUOTE]');
     });
+
+    it("supports multiple consecutive quote lines", function() {
+      var list = ["> This is quote!", "> Second line"]
+      expect(converter.quoteBlock(list, 0).data).toEqual('[QUOTE]\nThis is quote!\nSecond line\n[/QUOTE]');
+    });
   });
 
   describe("#image", function() {
