@@ -155,14 +155,6 @@ var Markdown = function() {
       });
     });
 
-    /* [    ]My code block => [CODE]My code block[/CODE] */
-    content = content.replace(/[ ]{4}([^\n]+)/gm, function(content, code) {
-      return template({
-        type: "CODE",
-        content: code
-      });
-    });
-
     /* `My code block` => [CODE]My code block[/CODE] */
     return content.replace(/`([^`\n]+.?)`/g, function(content, code) {
       return template({
@@ -196,11 +188,7 @@ var Markdown = function() {
 
         };
       } else {
-        _.each(self.options.methods, function(method) {
-          split[i] = self[method](split[i]);
-        });
-
-        _.each(["unorderedList", "orderedList"], function(method) {
+        _.each(["unorderedList", "orderedList", "codeIndent", "quoteBlock"], function(method) {
           /*
             re = {
               to: 5,
@@ -215,11 +203,20 @@ var Markdown = function() {
             };
 
             split[i] = re.data;
-            _.each(self.options.methods, function(method) {
-              split[i] = self[method](split[i]);
-            });
+			if (method !== "codeIndent") {
+				_.each(self.options.methods, function(method) {
+				  split[i] = self[method](split[i]);
+				});
+			}
           }
         });
+
+		if (!split[i].match(/\n/)) {
+			_.each(self.options.methods, function(method) {
+			  split[i] = self[method](split[i]);
+			});
+		}
+
       }
     };
 
@@ -228,15 +225,50 @@ var Markdown = function() {
     }).join("\n");
   };
 
+
+  /*
+    Converts Markdown multi-line quotes into single BBCode quote block
+    @lines Array<String> A list of lines. Each line is in Markdown.
+    @n Integer On what position should we start looking for a markdown quotes?
+    @return Hash Take a look at the #renderBlock method for more information.
+  */
+  self.quoteBlock = function(lines, n) {
+    var template = _.template("[QUOTE]<% for (var i = 0, length = list.length; i < length; i++){ %>\n<%= list[i] %><% }; %>\n[/QUOTE]");
+    return self.renderBlock({
+      template: template,
+      lines: lines,
+      n: n,
+      match: /^>\s*([^\n]+)/,
+      remove: /^>\s*/
+    });
+  };
+
+  /*
+    Converts Markdown multiple indented lines into single BBCode code block
+    @lines Array<String> A list of lines. Each line is in Markdown.
+    @n Integer On what position should we start looking for a markdown indented lines?
+    @return Hash Take a look at the #renderBlock method for more information.
+  */
+  self.codeIndent = function(lines, n) {
+    var template = _.template("[CODE]<% for (var i = 0, length = list.length; i < length; i++){ %>\n<%= list[i] %><% }; %>\n[/CODE]");
+    return self.renderBlock({
+      template: template,
+      lines: lines,
+      n: n,
+      match: /[ ]{4}([^\n]+)/,
+      remove: /^\s*/
+    });
+  };
+
   /*
     Converts Markdown unordered lists into BBCode lists.
     @lines Array<String> A list of lines. Each line is in Markdown.
     @n Integer On what position should we start looking for a markdown list?
-    @return Hash Take a look at the #renderList method for more information.
+    @return Hash Take a look at the #renderBlock method for more information.
   */
   self.unorderedList = function(lines, n) {
     var template = _.template("[LIST]<% for (var i = 0, length = list.length; i < length; i++){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
-    return self.renderList({
+    return self.renderBlock({
       template: template,
       lines: lines,
       n: n,
@@ -249,11 +281,11 @@ var Markdown = function() {
     Converts Markdown ordered lists into BBCode lists.
     @lines Array<String> A list of lines. Each line is in Markdown.
     @n Integer On what position should we start looking for a markdown list?
-    @return Hash Take a look at the #renderList method for more information.
+    @return Hash Take a look at the #renderBlock method for more information.
   */
   self.orderedList = function(lines, n) {
     var template = _.template("[LIST=1]<% for (var i = 0, length = list.length; i < length; i++){ %>\n[*]<%= list[i] %><% }; %>\n[/LIST]");
-    return self.renderList({
+    return self.renderBlock({
       template: template,
       lines: lines,
       n: n,
@@ -263,8 +295,8 @@ var Markdown = function() {
   };
 
   /*
-  @options Hash A hash of options used for rendering a markdown list
-  Example list:
+  @options Hash A hash of options used for rendering a markdown block
+  Example:
     options {
       template: "a template",
       n: 1,
@@ -274,28 +306,28 @@ var Markdown = function() {
     }
     
     @template A underscore.js template
-    @n Where #renderList should start look for a list
+    @n Where #renderBlock should start look for a block
     @lines A list of lines for the entire document
-    @match How do we know what a list item looks like?
-    @remove What should be striped out before we can call it a list item?
+    @match How do we know what a block item looks like?
+    @remove What should be striped out before we can call it a block item?
   @return Hash 
     return {
       found: true,
       data: data,
       to: i
     };
-    @found Did we find a list?
-    @data How does the new, BBCode list looks like?
-    @to On what line does the list end?
+    @found Did we find a block?
+    @data How does the new, BBCode block looks like?
+    @to On what line does the block end?
   */
-  self.renderList = function(options) {
+  self.renderBlock = function(options) {
     var template, i, matches, lines, length;
 
     template = options.template;
     lines = options.lines;
 
     for (i = options.n, length = lines.length; i < length; i++) {
-      /* Is this a list item ?*/
+      /* Is this a block line ?*/
       if (lines[i].match(options.match)) {
         matches = [lines[i].replace(options.remove, "")];
         for (i = (i + 1); i < length; i++) {
@@ -307,7 +339,7 @@ var Markdown = function() {
         };
 
         /* 
-          This is the end of the list
+          This is the end of the block
           Let's render it!
         */
         data = template({
