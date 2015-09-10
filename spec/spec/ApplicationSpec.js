@@ -76,6 +76,18 @@ describe("Markdown", function() {
       expect(converter.code("``` random\nCode!\n```")).toEqual('[CODE]\nCode!\n[/CODE]');
     });
 
+    it("supports multiple lines without language annotation", function() {
+      expect(converter.code("```\nfirst line\nsecond line\n```")).toEqual('[CODE]\nfirst line\nsecond line\n[/CODE]');
+    });
+
+    it("doesn't treat first line as language annotation", function() {
+      expect(converter.code("```\nfirst line\nsecond line\n```")).not.toEqual('[CODE]\nsecond line\n[/CODE]');
+    });
+
+    it("allows single backtick in code block", function() {
+      expect(converter.code("```\nain`t\n```")).toEqual('[CODE]\nain`t\n[/CODE]');
+    });
+
     it("converters markdown 4 space indent to a BBCode tag", function() {
       var list = ["    This is code!"]
       expect(converter.codeIndent(list, 0).data).toEqual('[CODE]\nThis is code!\n[/CODE]');
