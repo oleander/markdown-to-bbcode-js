@@ -1,9 +1,9 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    rack (1.5.2)
-    vienna (0.4.0)
-      rack (~> 1.5)
+    rack (2.2.11)
+    vienna (0.4.2)
+      rack (~> 2.0)
 
 PLATFORMS
   ruby
